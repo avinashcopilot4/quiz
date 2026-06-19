@@ -5,7 +5,7 @@ import { login as authLogin } from '../../api/authApi'
 
 interface AuthContextValue {
   user: User | null
-  login: (credentials: LoginCredentials) => Promise<void>
+  login: (credentials: LoginCredentials) => Promise<User>
   logout: () => void
 }
 
@@ -30,6 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       login: async (credentials: LoginCredentials) => {
         const nextUser = await authLogin(credentials)
         setUser(nextUser)
+        return nextUser
       },
       logout: () => {
         setUser(null)

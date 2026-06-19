@@ -4,7 +4,7 @@ import type { UserRole } from '../types/user.types'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
-  allowedRoles: UserRole[]
+  allowedRoles?: UserRole[]
 }
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
@@ -14,7 +14,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     return <Navigate to="/login" replace />
   }
 
-  if (!allowedRoles.includes(user.role)) {
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/login" replace />
   }
 

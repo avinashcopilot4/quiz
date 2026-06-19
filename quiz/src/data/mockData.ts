@@ -1,6 +1,6 @@
 import sampleQuizData from './sample-questions.json'
 import type { QuizModel } from '../types/quiz.types'
-import type { User, UserRole } from '../types/user.types'
+import type { User } from '../types/user.types'
 import type { Attempt } from '../types/attempt.types'
 
 export const mockQuizzes: QuizModel[] = [sampleQuizData]

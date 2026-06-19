@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
@@ -21,7 +20,6 @@ export function Navbar() {
       if (user.role === 'admin') {
         return [
           { label: 'Quizzes', to: '/admin/quizzes' },
-          { label: 'Results', to: '/admin/quizzes/quiz-001/results' },
         ]
       }
 
@@ -36,7 +34,7 @@ export function Navbar() {
   return (
     <AppBar position="static" color="primary" enableColorOnDark>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Stack direction="row" alignItems="center" spacing={2}>
+        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
           <Typography variant="h6" component={RouterLink} to="/" sx={{ color: 'inherit', textDecoration: 'none' }}>
             Quiz App
           </Typography>
@@ -54,7 +52,7 @@ export function Navbar() {
           ))}
         </Stack>
 
-        <Stack direction="row" alignItems="center" spacing={2}>
+        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
           {user ? (
             <>
               <Typography sx={{ color: 'inherit' }}>

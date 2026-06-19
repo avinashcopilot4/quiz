@@ -122,7 +122,7 @@ export function QuizEditorPage() {
 
   return (
     <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+      <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
         <Box>
           <Typography variant="h5">{isNew ? 'New Quiz' : 'Edit Quiz'}</Typography>
           <Typography color="text.secondary">Manage quiz details and questions.</Typography>
@@ -162,7 +162,7 @@ export function QuizEditorPage() {
           <Card key={question.id} variant="outlined">
             <CardContent>
               <Stack spacing={2}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
                   <Typography variant="subtitle1">Question {questionIndex + 1}</Typography>
                   <Button color="error" onClick={() => handleDeleteQuestion(question.id)}>
                     Delete question
@@ -187,7 +187,11 @@ export function QuizEditorPage() {
                   label="Correct option index"
                   type="number"
                   value={question.correctOptionIndex}
-                  inputProps={{ min: 0, max: question.options.length - 1 }}
+                  slotProps={{
+                    input: {
+                      inputProps: { min: 0, max: question.options.length - 1 },
+                    },
+                  }}
                   onChange={(event) =>
                     handleQuestionChange(question.id, 'correctOptionIndex', Number(event.target.value))
                   }

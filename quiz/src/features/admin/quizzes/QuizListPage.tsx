@@ -7,7 +7,6 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import Chip from '@mui/material/Chip'
-import Divider from '@mui/material/Divider'
 import { fetchAllQuizzes, removeQuiz } from '../../../api/quizApi'
 import type { QuizModel } from '../../../types/quiz.types'
 
@@ -33,7 +32,7 @@ export function QuizListPage() {
 
   return (
     <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+      <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
         <Box>
           <Typography variant="h5">Admin Quiz Management</Typography>
           <Typography color="text.secondary">Create, edit, and publish quizzes for employees.</Typography>
@@ -52,7 +51,7 @@ export function QuizListPage() {
           {quizzes.map((quiz) => (
             <Card key={quiz.id} variant="outlined">
               <CardContent>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+                <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
                   <Box>
                     <Typography variant="h6">{quiz.title}</Typography>
                     <Typography color="text.secondary" sx={{ mt: 0.5 }}>
@@ -62,7 +61,7 @@ export function QuizListPage() {
                       Created by {quiz.createdBy} · {quiz.questions.length} questions
                     </Typography>
                   </Box>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                     <Chip label={quiz.isPublished ? 'Published' : 'Draft'} color={quiz.isPublished ? 'success' : 'default'} />
                     <Button size="small" onClick={() => navigate(`/admin/quizzes/${quiz.id}/edit`)}>
                       Edit
