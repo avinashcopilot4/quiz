@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -14,24 +15,48 @@ import Divider from '@mui/material/Divider'
 import type { QuizModel } from '../../../types/quiz.types'
 import { calculateScore } from '../../../utils/scoring'
 import { QuestionStepper } from './QuestionStepper'
+import { fetchQuizById } from '../../../api/quizApi'
 
-interface AttemptPageProps {
-  quiz: QuizModel
-  onExit: () => void
-}
-
-export function AttemptPage({ quiz, onExit }: AttemptPageProps) {
+export function AttemptPage() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const [quiz, setQuiz] = useState<QuizModel | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadQuiz = async () => {
+      if (!id) {
+        setLoading(false)
+        return
+      }
+
+      const fetchedQuiz = await fetchQuizById(id)
+      setQuiz(fetchedQuiz ?? null)
+      setLoading(false)
+    }
+
+    loadQuiz()
+  }, [id])
+
+  const quizQuestions = quiz?.questions ?? []
+  const score = useMemo(
+    () => (submitted ? calculateScore(quizQuestions, answers) : 0),
+    [submitted, answers, quizQuestions],
+  )
+
+  if (loading) {
+    return <Typography>Loading quiz...</Typography>
+  }
+
+  if (!quiz) {
+    return <Typography>Quiz not found.</Typography>
+  }
 
   const currentQuestion = quiz.questions[currentIndex]
   const selectedValue = answers[currentQuestion.id]
-
-  const score = useMemo(
-    () => (submitted ? calculateScore(quiz.questions, answers) : 0),
-    [submitted, answers, quiz.questions],
-  )
 
   const handleOptionChange = (value: number) => {
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }))
@@ -131,7 +156,7 @@ export function AttemptPage({ quiz, onExit }: AttemptPageProps) {
         </Card>
       )}
 
-      <Button variant="outlined" onClick={onExit}>
+      <Button variant="outlined" onClick={() => navigate('/quizzes')}>
         Back to quiz list
       </Button>
     </Stack>

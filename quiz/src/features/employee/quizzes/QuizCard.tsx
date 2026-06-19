@@ -16,7 +16,7 @@ export function QuizCard({ quiz, onStart }: QuizCardProps) {
   return (
     <Card variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <CardContent sx={{ flexGrow: 1 }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} mb={1}>
+        <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
           <Typography variant="h6">{quiz.title}</Typography>
           <Chip
             label={quiz.isPublished ? 'Published' : 'Draft'}

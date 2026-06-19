@@ -1,3 +1,42 @@
-import React from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react'
+import type { User } from '../../types/user.types'
+import type { LoginCredentials } from '../../api/authApi'
+import { login as authLogin } from '../../api/authApi'
 
-export const AuthContext = React.createContext(null);
+interface AuthContextValue {
+  user: User | null
+  login: (credentials: LoginCredentials) => Promise<void>
+  logout: () => void
+}
+
+const storedUser = typeof window !== 'undefined' ? window.localStorage.getItem('quiz-app-user') : null
+
+export const AuthContext = createContext<AuthContextValue | null>(null)
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(storedUser ? JSON.parse(storedUser) : null)
+
+  useEffect(() => {
+    if (user) {
+      window.localStorage.setItem('quiz-app-user', JSON.stringify(user))
+    } else {
+      window.localStorage.removeItem('quiz-app-user')
+    }
+  }, [user])
+
+  const value = useMemo(
+    () => ({
+      user,
+      login: async (credentials: LoginCredentials) => {
+        const nextUser = await authLogin(credentials)
+        setUser(nextUser)
+      },
+      logout: () => {
+        setUser(null)
+      },
+    }),
+    [user],
+  )
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}

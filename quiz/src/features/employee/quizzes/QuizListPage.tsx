@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -5,12 +6,13 @@ import sampleQuizData from '../../../data/sample-questions.json'
 import { QuizCard } from './QuizCard'
 import type { QuizModel } from '../../../types/quiz.types'
 
-interface QuizListPageProps {
-  onStartQuiz: (quiz: QuizModel) => void
-}
-
-export function QuizListPage({ onStartQuiz }: QuizListPageProps) {
+export function QuizListPage() {
+  const navigate = useNavigate()
   const quiz = sampleQuizData as QuizModel
+
+  const handleStartQuiz = (selectedQuiz: QuizModel) => {
+    navigate(`/quizzes/${selectedQuiz.id}/attempt`)
+  }
 
   return (
     <Box>
@@ -22,8 +24,8 @@ export function QuizListPage({ onStartQuiz }: QuizListPageProps) {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={4}>
-          <QuizCard quiz={quiz} onStart={onStartQuiz} />
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+          <QuizCard quiz={quiz} onStart={handleStartQuiz} />
         </Grid>
       </Grid>
     </Box>
