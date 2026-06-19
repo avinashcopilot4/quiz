@@ -84,3 +84,7 @@ This repository includes additional documentation in `docs/`:
 ## Role Switching
 
 Users can now hold multiple roles. When a user has both `admin` and `employee` roles, the navbar shows the current active role and allows switching between available roles from a vertical list.
+
+## Mock Storage Behavior
+
+Quiz data and employee attempt data are persisted to `sessionStorage` during the browser session. This means admin quiz changes and submitted attempts survive page reloads for the current session.

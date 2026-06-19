@@ -57,8 +57,11 @@ export function QuizListPage() {
                     <Typography color="text.secondary" sx={{ mt: 0.5 }}>
                       {quiz.description}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Created by {quiz.createdBy} · {quiz.questions.length} questions
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                      {quiz.questionCount ?? quiz.questions.length} questions · {quiz.topic} · {quiz.difficulty}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                      Author: {quiz.author || quiz.createdBy} · Tags: {quiz.tags?.join(', ') || 'None'}
                     </Typography>
                   </Box>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>

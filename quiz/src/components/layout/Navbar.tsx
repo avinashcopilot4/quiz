@@ -52,7 +52,7 @@ export function Navbar() {
   }
 
   return (
-    <AppBar position="static" color="primary" enableColorOnDark>
+    <AppBar position="sticky" color="primary" enableColorOnDark sx={{ top: 0, zIndex: (theme) => theme.zIndex.appBar }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
           <Typography variant="h6" component={RouterLink} to="/" sx={{ color: 'inherit', textDecoration: 'none' }}>

@@ -13,6 +13,8 @@ interface QuizCardProps {
 }
 
 export function QuizCard({ quiz, onStart }: QuizCardProps) {
+  const questionCount = quiz.questionCount ?? quiz.questions.length
+
   return (
     <Card variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <CardContent sx={{ flexGrow: 1 }}>
@@ -33,8 +35,11 @@ export function QuizCard({ quiz, onStart }: QuizCardProps) {
         <Typography variant="body2" color="text.secondary" component="p" gutterBottom>
           {quiz.description}
         </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {quiz.questions.length} question{quiz.questions.length === 1 ? '' : 's'} · created by {quiz.createdBy}
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+          {questionCount} question{questionCount === 1 ? '' : 's'} · {quiz.topic} · {quiz.language}
+        </Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+          Difficulty: {quiz.difficulty}
         </Typography>
       </CardContent>
 

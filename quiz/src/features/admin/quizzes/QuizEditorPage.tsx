@@ -40,8 +40,17 @@ const createNewQuiz = (createdBy: string): QuizModel => ({
   id: `quiz-${Date.now()}-${Math.random().toString(36).slice(2)}`,
   title: '',
   description: '',
+  topic: 'General',
+  language: 'English',
+  difficulty: 'Intermediate',
+  tags: [],
   createdBy,
+  author: createdBy,
   createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  questionCount: 1,
+  timeLimit: 10,
+  passingScore: 70,
   questions: [createEmptyQuestion()],
   status: 'draft',
 })
@@ -70,8 +79,24 @@ export function QuizEditorPage() {
 
   const isNew = useMemo(() => !id, [id])
 
-  const handleFieldChange = (field: keyof Pick<QuizModel, 'title' | 'description'>, value: string) => {
+  const handleFieldChange = (
+    field: keyof Pick<QuizModel, 'title' | 'description' | 'topic' | 'language' | 'difficulty' | 'author'>,
+    value: string,
+  ) => {
     setQuiz((current) => (current ? { ...current, [field]: value } : current))
+  }
+
+  const handleNumberFieldChange = (
+    field: keyof Pick<QuizModel, 'timeLimit' | 'passingScore'>,
+    value: number | undefined,
+  ) => {
+    setQuiz((current) => (current ? { ...current, [field]: value } : current))
+  }
+
+  const handleTagsChange = (value: string) => {
+    setQuiz((current) =>
+      current ? { ...current, tags: value.split(',').map((tag) => tag.trim()).filter(Boolean) } : current,
+    )
   }
 
   const handleStatusChange = (status: QuizModel['status']) => {
@@ -166,10 +191,16 @@ export function QuizEditorPage() {
 
     setErrors({ questions: {} })
 
+    const quizToSave: QuizModel = {
+      ...quiz,
+      questionCount: quiz.questions.length,
+      updatedAt: new Date().toISOString(),
+    }
+
     if (isNew) {
-      await createQuiz(quiz)
+      await createQuiz(quizToSave)
     } else {
-      await saveQuiz(quiz)
+      await saveQuiz(quizToSave)
     }
     navigate('/admin/quizzes')
   }
@@ -207,6 +238,67 @@ export function QuizEditorPage() {
                 multiline
                 minRows={3}
                 onChange={(event) => handleFieldChange('description', event.target.value)}
+              />
+              <TextField
+                label="Topic"
+                value={quiz.topic}
+                fullWidth
+                onChange={(event) => handleFieldChange('topic', event.target.value)}
+              />
+              <TextField
+                label="Language"
+                value={quiz.language}
+                fullWidth
+                onChange={(event) => handleFieldChange('language', event.target.value)}
+              />
+              <TextField
+                select
+                label="Difficulty"
+                value={quiz.difficulty}
+                fullWidth
+                onChange={(event) => handleFieldChange('difficulty', event.target.value)}
+              >
+                <MenuItem value="Beginner">Beginner</MenuItem>
+                <MenuItem value="Intermediate">Intermediate</MenuItem>
+                <MenuItem value="Advanced">Advanced</MenuItem>
+              </TextField>
+              <TextField
+                label="Tags (comma separated)"
+                value={quiz.tags.join(', ')}
+                fullWidth
+                onChange={(event) => handleTagsChange(event.target.value)}
+              />
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <TextField
+                  label="Time limit (minutes)"
+                  type="number"
+                  value={quiz.timeLimit ?? ''}
+                  fullWidth
+                  onChange={(event) =>
+                    handleNumberFieldChange(
+                      'timeLimit',
+                      event.target.value === '' ? undefined : Number(event.target.value),
+                    )
+                  }
+                />
+                <TextField
+                  label="Passing score (%)"
+                  type="number"
+                  value={quiz.passingScore ?? ''}
+                  fullWidth
+                  onChange={(event) =>
+                    handleNumberFieldChange(
+                      'passingScore',
+                      event.target.value === '' ? undefined : Number(event.target.value),
+                    )
+                  }
+                />
+              </Stack>
+              <TextField
+                label="Author"
+                value={quiz.author}
+                fullWidth
+                onChange={(event) => handleFieldChange('author', event.target.value)}
               />
               <TextField
                 select

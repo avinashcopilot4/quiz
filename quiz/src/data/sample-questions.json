@@ -2,8 +2,17 @@
   "id": "quiz-001",
   "title": "Basic React Quiz",
   "description": "A short quiz to test basic React and JavaScript knowledge.",
+  "topic": "React",
+  "language": "English",
+  "difficulty": "Beginner",
+  "tags": ["react", "javascript", "frontend"],
   "createdBy": "admin",
+  "author": "Admin User",
   "createdAt": "2026-06-19T12:00:00.000Z",
+  "updatedAt": "2026-06-19T12:00:00.000Z",
+  "questionCount": 3,
+  "timeLimit": 10,
+  "passingScore": 70,
   "status": "published",
   "questions": [
     {
