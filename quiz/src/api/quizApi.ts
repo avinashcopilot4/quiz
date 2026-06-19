@@ -2,7 +2,7 @@ import type { QuizModel } from '../types/quiz.types'
 import { addMockQuiz, deleteMockQuiz, getMockQuizById, mockQuizzes, updateMockQuiz } from '../data/mockData'
 
 export async function fetchPublishedQuizzes(): Promise<QuizModel[]> {
-  return mockQuizzes.filter((quiz) => quiz.isPublished)
+  return mockQuizzes.filter((quiz) => quiz.status === 'published')
 }
 
 export async function fetchAllQuizzes(): Promise<QuizModel[]> {

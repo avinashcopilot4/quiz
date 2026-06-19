@@ -3,7 +3,9 @@ import type { QuizModel } from '../types/quiz.types'
 import type { User } from '../types/user.types'
 import type { Attempt } from '../types/attempt.types'
 
-export const mockQuizzes: QuizModel[] = [sampleQuizData]
+const initialSampleQuiz = sampleQuizData as QuizModel
+
+export const mockQuizzes: QuizModel[] = [initialSampleQuiz]
 
 export const mockUsers: User[] = [
   {

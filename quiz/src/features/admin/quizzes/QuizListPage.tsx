@@ -62,7 +62,22 @@ export function QuizListPage() {
                     </Typography>
                   </Box>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                    <Chip label={quiz.isPublished ? 'Published' : 'Draft'} color={quiz.isPublished ? 'success' : 'default'} />
+                    <Chip
+                      label={
+                        quiz.status === 'published'
+                          ? 'Published'
+                          : quiz.status === 'draft'
+                          ? 'Draft'
+                          : 'Terminated'
+                      }
+                      color={
+                        quiz.status === 'published'
+                          ? 'success'
+                          : quiz.status === 'draft'
+                          ? 'default'
+                          : 'error'
+                      }
+                    />
                     <Button size="small" onClick={() => navigate(`/admin/quizzes/${quiz.id}/edit`)}>
                       Edit
                     </Button>

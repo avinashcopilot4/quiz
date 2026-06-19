@@ -4,7 +4,7 @@
   "description": "A short quiz to test basic React and JavaScript knowledge.",
   "createdBy": "admin",
   "createdAt": "2026-06-19T12:00:00.000Z",
-  "isPublished": true,
+  "status": "published",
   "questions": [
     {
       "id": "q1",

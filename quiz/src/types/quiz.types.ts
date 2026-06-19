@@ -1,3 +1,5 @@
+export type QuizStatus = 'draft' | 'published' | 'terminated'
+
 export interface QuizModel {
   id: string;
   title: string;
@@ -5,7 +7,7 @@ export interface QuizModel {
   createdBy: string;
   createdAt: string;
   questions: QuestionModel[];
-  isPublished: boolean;
+  status: QuizStatus;
 }
 
 export interface QuestionModel {

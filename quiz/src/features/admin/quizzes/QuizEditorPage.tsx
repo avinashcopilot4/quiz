@@ -5,7 +5,12 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
-import Checkbox from '@mui/material/Checkbox'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
+import FormHelperText from '@mui/material/FormHelperText'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -13,6 +18,17 @@ import Divider from '@mui/material/Divider'
 import { fetchQuizById, createQuiz, saveQuiz } from '../../../api/quizApi'
 import type { QuizModel, QuestionModel } from '../../../types/quiz.types'
 import { useAuth } from '../../auth/useAuth'
+
+interface QuestionErrors {
+  text?: string
+  options: (string | undefined)[]
+  correctAnswer?: string
+}
+
+interface QuizEditorErrors {
+  title?: string
+  questions: Record<string, QuestionErrors>
+}
 
 const createEmptyQuestion = (): QuestionModel => ({
   id: `q-${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -28,7 +44,7 @@ const createNewQuiz = (createdBy: string): QuizModel => ({
   createdBy,
   createdAt: new Date().toISOString(),
   questions: [createEmptyQuestion()],
-  isPublished: false,
+  status: 'draft',
 })
 
 export function QuizEditorPage() {
@@ -37,6 +53,7 @@ export function QuizEditorPage() {
   const { user } = useAuth()
   const [quiz, setQuiz] = useState<QuizModel | null>(null)
   const [loading, setLoading] = useState(true)
+  const [errors, setErrors] = useState<QuizEditorErrors>({ questions: {} })
 
   useEffect(() => {
     const init = async () => {
@@ -58,8 +75,8 @@ export function QuizEditorPage() {
     setQuiz((current) => (current ? { ...current, [field]: value } : current))
   }
 
-  const handleTogglePublished = () => {
-    setQuiz((current) => (current ? { ...current, isPublished: !current.isPublished } : current))
+  const handleStatusChange = (status: QuizModel['status']) => {
+    setQuiz((current) => (current ? { ...current, status } : current))
   }
 
   const handleQuestionChange = (questionId: string, field: keyof QuestionModel, value: string | number) => {
@@ -108,6 +125,48 @@ export function QuizEditorPage() {
 
   const handleSave = async () => {
     if (!quiz) return
+
+    const nextErrors: QuizEditorErrors = { questions: {} }
+    let hasError = false
+
+    if (!quiz.title.trim()) {
+      nextErrors.title = 'Quiz title is required'
+      hasError = true
+    }
+
+    quiz.questions.forEach((question) => {
+      const questionErrors: QuestionErrors = { options: [], correctAnswer: undefined }
+
+      if (!question.text.trim()) {
+        questionErrors.text = 'Question text is required'
+        hasError = true
+      }
+
+      question.options.forEach((option, index) => {
+        if (!option.trim()) {
+          questionErrors.options[index] = 'Option text is required'
+          hasError = true
+        }
+      })
+
+      const selectedOptionText = question.options[question.correctOptionIndex]?.trim()
+      if (selectedOptionText === undefined || selectedOptionText === '') {
+        questionErrors.correctAnswer = 'Select a valid correct answer'
+        hasError = true
+      }
+
+      if (questionErrors.text || questionErrors.options.some(Boolean) || questionErrors.correctAnswer) {
+        nextErrors.questions[question.id] = questionErrors
+      }
+    })
+
+    if (hasError) {
+      setErrors(nextErrors)
+      return
+    }
+
+    setErrors({ questions: {} })
+
     if (isNew) {
       await createQuiz(quiz)
     } else {
@@ -150,10 +209,17 @@ export function QuizEditorPage() {
                 minRows={3}
                 onChange={(event) => handleFieldChange('description', event.target.value)}
               />
-              <FormControlLabel
-                control={<Checkbox checked={quiz.isPublished} onChange={handleTogglePublished} />}
-                label="Published"
-              />
+              <TextField
+                select
+                label="Status"
+                value={quiz.status}
+                fullWidth
+                onChange={(event) => handleStatusChange(event.target.value as QuizModel['status'])}
+              >
+                <MenuItem value="draft">Draft</MenuItem>
+                <MenuItem value="published">Published</MenuItem>
+                <MenuItem value="terminated">Terminated</MenuItem>
+              </TextField>
             </Stack>
           </CardContent>
         </Card>
@@ -172,30 +238,40 @@ export function QuizEditorPage() {
                   label="Question text"
                   value={question.text}
                   fullWidth
+                  error={Boolean(errors.questions[question.id]?.text)}
+                  helperText={errors.questions[question.id]?.text}
                   onChange={(event) => handleQuestionChange(question.id, 'text', event.target.value)}
                 />
-                {question.options.map((option, optionIndex) => (
-                  <TextField
-                    key={optionIndex}
-                    label={`Option ${optionIndex + 1}`}
-                    value={option}
-                    fullWidth
-                    onChange={(event) => handleOptionChange(question.id, optionIndex, event.target.value)}
-                  />
-                ))}
-                <TextField
-                  label="Correct option index"
-                  type="number"
-                  value={question.correctOptionIndex}
-                  slotProps={{
-                    input: {
-                      inputProps: { min: 0, max: question.options.length - 1 },
-                    },
-                  }}
-                  onChange={(event) =>
-                    handleQuestionChange(question.id, 'correctOptionIndex', Number(event.target.value))
-                  }
-                />
+                <FormControl
+                  component="fieldset"
+                  error={Boolean(errors.questions[question.id]?.correctAnswer)}
+                >
+                  <FormLabel component="legend" sx={{ mb: 2 }}>Correct answer</FormLabel>
+                  <RadioGroup
+                    value={question.correctOptionIndex.toString()}
+                    onChange={(event) =>
+                      handleQuestionChange(question.id, 'correctOptionIndex', Number(event.target.value))
+                    }
+                    sx={{ gap: 2 }}
+                  >
+                    {question.options.map((option, optionIndex) => (
+                      <Stack key={optionIndex} direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+                        <Radio value={optionIndex.toString()} />
+                        <TextField
+                          fullWidth
+                          label={`Option ${optionIndex + 1}`}
+                          value={option}
+                          error={Boolean(errors.questions[question.id]?.options[optionIndex])}
+                          helperText={errors.questions[question.id]?.options[optionIndex]}
+                          onChange={(event) => handleOptionChange(question.id, optionIndex, event.target.value)}
+                        />
+                      </Stack>
+                    ))}
+                  </RadioGroup>
+                  {errors.questions[question.id]?.correctAnswer ? (
+                    <FormHelperText>{errors.questions[question.id]?.correctAnswer}</FormHelperText>
+                  ) : null}
+                </FormControl>
               </Stack>
             </CardContent>
           </Card>

@@ -19,8 +19,14 @@ export function QuizCard({ quiz, onStart }: QuizCardProps) {
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
           <Typography variant="h6">{quiz.title}</Typography>
           <Chip
-            label={quiz.isPublished ? 'Published' : 'Draft'}
-            color={quiz.isPublished ? 'success' : 'default'}
+            label={
+              quiz.status === 'published'
+                ? 'Published'
+                : quiz.status === 'draft'
+                ? 'Draft'
+                : 'Terminated'
+            }
+            color={quiz.status === 'published' ? 'success' : quiz.status === 'draft' ? 'default' : 'error'}
             size="small"
           />
         </Stack>
