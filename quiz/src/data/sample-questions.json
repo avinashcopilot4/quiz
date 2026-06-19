@@ -1,0 +1,43 @@
+{
+  "id": "quiz-001",
+  "title": "Basic React Quiz",
+  "description": "A short quiz to test basic React and JavaScript knowledge.",
+  "createdBy": "admin",
+  "createdAt": "2026-06-19T12:00:00.000Z",
+  "isPublished": true,
+  "questions": [
+    {
+      "id": "q1",
+      "text": "What is the primary purpose of React?",
+      "options": [
+        "To build user interfaces",
+        "To manage database queries",
+        "To style HTML pages",
+        "To create backend APIs"
+      ],
+      "correctOptionIndex": 0
+    },
+    {
+      "id": "q2",
+      "text": "Which hook is used to add state in a functional component?",
+      "options": [
+        "useEffect",
+        "useState",
+        "useMemo",
+        "useRef"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q3",
+      "text": "Which element attribute is used to render dynamic lists in React?",
+      "options": [
+        "key",
+        "id",
+        "className",
+        "data-index"
+      ],
+      "correctOptionIndex": 0
+    }
+  ]
+}

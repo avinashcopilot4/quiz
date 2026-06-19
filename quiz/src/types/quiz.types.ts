@@ -1,16 +1,19 @@
-export interface Quiz {
+export interface QuizModel {
   id: string;
   title: string;
   description: string;
   createdBy: string;
   createdAt: string;
-  questions: Question[];
+  questions: QuestionModel[];
   isPublished: boolean;
 }
 
-export interface Question {
+export interface QuestionModel {
   id: string;
   text: string;
   options: string[];
   correctOptionIndex: number;
 }
+
+export type QuizJson = QuizModel;
+export type QuestionJson = QuestionModel;
