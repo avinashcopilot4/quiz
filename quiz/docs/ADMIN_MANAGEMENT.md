@@ -38,8 +38,9 @@ Provide a simple admin experience for creating, editing, and publishing quizzes.
   - `removeQuiz(quizId)`
 
 - `src/data/mockData.ts`
-  - in-memory quiz store
-  - helper functions for CRUD operations
+  - quizzes are persisted using `sessionStorage` so admin quiz changes survive page reloads during the session
+  - attempts are also stored in `sessionStorage`
+  - helper functions provide CRUD behavior for quizzes and attempt tracking
 
 ## How to Extend
 

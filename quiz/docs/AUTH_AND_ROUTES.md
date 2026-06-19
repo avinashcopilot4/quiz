@@ -7,14 +7,20 @@ This app supports two roles:
 - `admin`
 - `employee`
 
-Each role has a separate route experience and UI navigation.
+A user can hold multiple roles at once. In that case, the `user` object contains:
+
+- `roles`: an array of available roles
+- `activeRole`: the currently selected role
+
+Each role has a separate route experience and UI navigation based on `activeRole`.
 
 ## Authentication Flow
 
-- The login screen uses a role toggle to load the correct email for the selected user role.
+- The login screen uses a role toggle to select the active role for this session.
 - The mock auth API resolves a user by email from `src/data/mockData.ts`.
 - Auth state is stored in React Context and persisted to `localStorage`.
-- On login, the app redirects based on the resolved user role.
+- On login, the app redirects based on the selected `activeRole`.
+- If a user has multiple roles, the navbar displays the current role and allows switching roles from a vertical list.
 
 ## Auth Components
 
@@ -34,7 +40,7 @@ Each role has a separate route experience and UI navigation.
 - `src/components/ProtectedRoute.tsx`
 - Guard logic:
   - if user is not signed in, redirect to `/login`
-  - if `allowedRoles` is defined and the current user role is not allowed, redirect to `/login`
+  - if `allowedRoles` is defined and the current `activeRole` is not allowed, redirect to `/`
 
 ## Route Structure
 

@@ -80,3 +80,7 @@ This repository includes additional documentation in `docs/`:
 - `docs/AUTH_AND_ROUTES.md` — authentication flow, role-based access, and route structure
 - `docs/ADMIN_MANAGEMENT.md` — admin quiz management screens and mock API behavior
 - `docs/DEVELOPMENT.md` — local development, build scripts, and environment notes
+
+## Role Switching
+
+Users can now hold multiple roles. When a user has both `admin` and `employee` roles, the navbar shows the current active role and allows switching between available roles from a vertical list.

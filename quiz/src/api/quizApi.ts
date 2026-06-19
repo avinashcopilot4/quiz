@@ -1,12 +1,12 @@
 import type { QuizModel } from '../types/quiz.types'
-import { addMockQuiz, deleteMockQuiz, getMockQuizById, mockQuizzes, updateMockQuiz } from '../data/mockData'
+import { addMockQuiz, deleteMockQuiz, getMockQuizById, getStoredQuizzes, updateMockQuiz } from '../data/mockData'
 
 export async function fetchPublishedQuizzes(): Promise<QuizModel[]> {
-  return mockQuizzes.filter((quiz) => quiz.status === 'published')
+  return getStoredQuizzes().filter((quiz) => quiz.status === 'published')
 }
 
 export async function fetchAllQuizzes(): Promise<QuizModel[]> {
-  return mockQuizzes
+  return getStoredQuizzes()
 }
 
 export async function fetchQuizById(quizId: string): Promise<QuizModel | undefined> {

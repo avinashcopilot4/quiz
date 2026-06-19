@@ -1,14 +1,25 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
-import sampleQuizData from '../../../data/sample-questions.json'
+import { fetchPublishedQuizzes } from '../../../api/quizApi'
 import { QuizCard } from './QuizCard'
 import type { QuizModel } from '../../../types/quiz.types'
 
 export function QuizListPage() {
   const navigate = useNavigate()
-  const quiz = sampleQuizData as QuizModel
+  const [quizzes, setQuizzes] = useState<QuizModel[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadQuizzes = async () => {
+      const published = await fetchPublishedQuizzes()
+      setQuizzes(published)
+      setLoading(false)
+    }
+
+    loadQuizzes()
+  }, [])
 
   const handleStartQuiz = (selectedQuiz: QuizModel) => {
     navigate(`/quizzes/${selectedQuiz.id}/attempt`)
@@ -23,11 +34,29 @@ export function QuizListPage() {
         Choose a quiz and answer the questions using the new Material UI experience.
       </Typography>
 
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <QuizCard quiz={quiz} onStart={handleStartQuiz} />
-        </Grid>
-      </Grid>
+      {loading ? (
+        <Typography>Loading quizzes...</Typography>
+      ) : quizzes.length === 0 ? (
+        <Typography>No quizzes are published yet.</Typography>
+      ) : (
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 3,
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, minmax(0, 1fr))',
+              md: 'repeat(3, minmax(0, 1fr))',
+            },
+          }}
+        >
+          {quizzes.map((quiz) => (
+            <Box key={quiz.id}>
+              <QuizCard quiz={quiz} onStart={handleStartQuiz} />
+            </Box>
+          ))}
+        </Box>
+      )}
     </Box>
   )
 }
