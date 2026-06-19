@@ -37,8 +37,8 @@ export function LoginPage() {
     setError(null)
 
     try {
-      const user = await login(values)
-      navigate(user.role === 'admin' ? '/admin/quizzes' : '/quizzes')
+      const user = await login({ ...values, role: selectedRole })
+      navigate(user.activeRole === 'admin' ? '/admin/quizzes' : '/quizzes')
     } catch (err) {
       setError((err as Error).message)
     }

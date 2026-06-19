@@ -12,13 +12,15 @@ export const mockUsers: User[] = [
     id: 'admin-1',
     name: 'Admin User',
     email: 'admin@example.com',
-    role: 'admin',
+    roles: ['admin', 'employee'],
+    activeRole: 'admin',
   },
   {
     id: 'employee-1',
     name: 'Employee User',
     email: 'employee@example.com',
-    role: 'employee',
+    roles: ['employee'],
+    activeRole: 'employee',
   },
 ]
 

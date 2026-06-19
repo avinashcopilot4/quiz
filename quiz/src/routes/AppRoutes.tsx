@@ -19,7 +19,7 @@ function HomeRedirect() {
     return <Navigate to="/login" replace />
   }
 
-  return <Navigate to={user.role === 'admin' ? '/admin/quizzes' : '/quizzes'} replace />
+  return <Navigate to={user.activeRole === 'admin' ? '/admin/quizzes' : '/quizzes'} replace />
 }
 
 function Layout({ children }: { children: React.ReactNode }) {

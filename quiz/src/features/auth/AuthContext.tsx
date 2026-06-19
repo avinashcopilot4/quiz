@@ -7,6 +7,7 @@ interface AuthContextValue {
   user: User | null
   login: (credentials: LoginCredentials) => Promise<User>
   logout: () => void
+  switchRole: (role: User['activeRole']) => void
 }
 
 const storedUser = typeof window !== 'undefined' ? window.localStorage.getItem('quiz-app-user') : null
@@ -34,6 +35,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
       logout: () => {
         setUser(null)
+      },
+      switchRole: (role: User['activeRole']) => {
+        setUser((current) =>
+          current && current.roles.includes(role) ? { ...current, activeRole: role } : current,
+        )
       },
     }),
     [user],
