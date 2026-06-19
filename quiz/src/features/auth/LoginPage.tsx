@@ -24,7 +24,7 @@ export function LoginPage() {
 
     try {
       await login(values)
-      navigate('/quizzes')
+      navigate(values.email === 'admin@example.com' ? '/admin/quizzes' : '/quizzes')
     } catch (err) {
       setError((err as Error).message)
     }

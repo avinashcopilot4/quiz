@@ -48,6 +48,24 @@ export function getMockQuizById(id: string): QuizModel | undefined {
   return mockQuizzes.find((quiz) => quiz.id === id)
 }
 
+export function addMockQuiz(quiz: QuizModel): void {
+  mockQuizzes.push(quiz)
+}
+
+export function updateMockQuiz(quiz: QuizModel): void {
+  const index = mockQuizzes.findIndex((item) => item.id === quiz.id)
+  if (index >= 0) {
+    mockQuizzes[index] = quiz
+  }
+}
+
+export function deleteMockQuiz(id: string): void {
+  const index = mockQuizzes.findIndex((item) => item.id === id)
+  if (index >= 0) {
+    mockQuizzes.splice(index, 1)
+  }
+}
+
 export function getAttemptsByEmployee(employeeId: string): Attempt[] {
   return mockAttempts.filter((attempt) => attempt.employeeId === employeeId)
 }

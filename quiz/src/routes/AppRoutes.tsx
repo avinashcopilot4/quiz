@@ -1,6 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { AppShell } from '../components/layout/AppShell'
 import { LoginPage } from '../features/auth/LoginPage'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 import { QuizListPage as EmployeeQuizListPage } from '../features/employee/quizzes/QuizListPage'
@@ -8,15 +7,23 @@ import { AttemptPage } from '../features/employee/attempt/AttemptPage'
 import { MyResultsPage } from '../features/employee/results/MyResultsPage'
 import { ResultDetail } from '../features/employee/results/ResultDetail'
 import { QuizListPage as AdminQuizListPage } from '../features/admin/quizzes/QuizListPage'
+import { QuizEditorPage } from '../features/admin/quizzes/QuizEditorPage'
 import { AdminResultsPage } from '../features/admin/results/AdminResultsPage'
 import type { UserRole } from '../types/user.types'
+import { useAuth } from '../features/auth/useAuth'
+
+function HomeRedirect() {
+  const { user } = useAuth()
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <Navigate to={user.role === 'admin' ? '/admin/quizzes' : '/quizzes'} replace />
+}
 
 function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>{children}</Box>
-    </Container>
-  )
+  return <AppShell>{children}</AppShell>
 }
 
 export function AppRoutes() {
@@ -33,8 +40,8 @@ export function AppRoutes() {
                 <Routes>
                   <Route index element={<AdminQuizListPage />} />
                   <Route path="quizzes" element={<AdminQuizListPage />} />
-                  <Route path="quizzes/new" element={<div>Admin quiz creation page</div>} />
-                  <Route path="quizzes/:id/edit" element={<div>Edit quiz page</div>} />
+                  <Route path="quizzes/new" element={<QuizEditorPage />} />
+                  <Route path="quizzes/:id/edit" element={<QuizEditorPage />} />
                   <Route path="quizzes/:id/results" element={<AdminResultsPage />} />
                 </Routes>
               </Layout>
@@ -68,7 +75,7 @@ export function AppRoutes() {
           }
         />
 
-        <Route path="/" element={<Navigate to="/quizzes" replace />} />
+        <Route path="/" element={<HomeRedirect />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

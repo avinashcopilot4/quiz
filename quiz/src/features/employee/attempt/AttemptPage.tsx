@@ -74,6 +74,37 @@ export function AttemptPage() {
     setSubmitted(true)
   }
 
+  if (submitted) {
+    return (
+      <Stack spacing={3}>
+        <Box>
+          <Typography variant="h5" gutterBottom>
+            {quiz.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {quiz.description}
+          </Typography>
+        </Box>
+
+        <Card variant="outlined" sx={{ p: 3 }}>
+          <Typography variant="h6">Quiz Completed</Typography>
+          <Typography sx={{ mt: 1 }}>
+            Your score: {score} / {quiz.questions.length}
+          </Typography>
+          <Typography color="text.secondary" sx={{ mt: 1 }}>
+            {score === quiz.questions.length
+              ? 'Perfect score — great job!'
+              : 'Your answers are now submitted and cannot be changed.'}
+          </Typography>
+        </Card>
+
+        <Button variant="outlined" onClick={() => navigate('/quizzes')}>
+          Back to quiz list
+        </Button>
+      </Stack>
+    )
+  }
+
   return (
     <Stack spacing={3}>
       <Box>
@@ -132,29 +163,11 @@ export function AttemptPage() {
             Next
           </Button>
           <Box sx={{ flexGrow: 1 }} />
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            disabled={submitted}
-          >
+          <Button variant="contained" onClick={handleSubmit}>
             Submit
           </Button>
         </CardActions>
       </Card>
-
-      {submitted && (
-        <Card variant="outlined" sx={{ p: 2 }}>
-          <Typography variant="h6">Quiz Completed</Typography>
-          <Typography sx={{ mt: 1 }}>
-            Your score: {score} / {quiz.questions.length}
-          </Typography>
-          <Typography color="text.secondary" sx={{ mt: 1 }}>
-            {score === quiz.questions.length
-              ? 'Perfect score — great job!'
-              : 'Review your answers and try again when you are ready.'}
-          </Typography>
-        </Card>
-      )}
 
       <Button variant="outlined" onClick={() => navigate('/quizzes')}>
         Back to quiz list

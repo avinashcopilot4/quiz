@@ -1,5 +1,5 @@
 import type { QuizModel } from '../types/quiz.types'
-import { mockQuizzes } from '../data/mockData'
+import { addMockQuiz, deleteMockQuiz, getMockQuizById, mockQuizzes, updateMockQuiz } from '../data/mockData'
 
 export async function fetchPublishedQuizzes(): Promise<QuizModel[]> {
   return mockQuizzes.filter((quiz) => quiz.isPublished)
@@ -10,5 +10,19 @@ export async function fetchAllQuizzes(): Promise<QuizModel[]> {
 }
 
 export async function fetchQuizById(quizId: string): Promise<QuizModel | undefined> {
-  return mockQuizzes.find((quiz) => quiz.id === quizId)
+  return getMockQuizById(quizId)
+}
+
+export async function createQuiz(quiz: QuizModel): Promise<QuizModel> {
+  addMockQuiz(quiz)
+  return quiz
+}
+
+export async function saveQuiz(quiz: QuizModel): Promise<QuizModel> {
+  updateMockQuiz(quiz)
+  return quiz
+}
+
+export async function removeQuiz(quizId: string): Promise<void> {
+  deleteMockQuiz(quizId)
 }
