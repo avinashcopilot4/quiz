@@ -71,3 +71,12 @@ export default defineConfig([
   },
 ])
 ```
+
+## Project Documentation
+
+This repository includes additional documentation in `docs/`:
+
+- `docs/PROJECT_OVERVIEW.md` — app purpose, architecture, and folder layout
+- `docs/AUTH_AND_ROUTES.md` — authentication flow, role-based access, and route structure
+- `docs/ADMIN_MANAGEMENT.md` — admin quiz management screens and mock API behavior
+- `docs/DEVELOPMENT.md` — local development, build scripts, and environment notes
