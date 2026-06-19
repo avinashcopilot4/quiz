@@ -27,6 +27,7 @@ export function AttemptPage() {
   const [quiz, setQuiz] = useState<QuizModel | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, number>>({})
+  const [reviewed, setReviewed] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const startedAt = useMemo(() => new Date().toISOString(), [])
@@ -59,6 +60,13 @@ export function AttemptPage() {
 
   const handleOptionChange = (value: number) => {
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }))
+  }
+
+  const handleToggleReview = () => {
+    setReviewed((prev) => ({
+      ...prev,
+      [currentQuestion.id]: !prev[currentQuestion.id],
+    }))
   }
 
   const handlePrevious = () => {
@@ -110,14 +118,16 @@ export function AttemptPage() {
         </Typography>
       </Box>
 
-      <QuestionStepper
-        questions={quiz.questions}
-        currentIndex={currentIndex}
-        onSelect={setCurrentIndex}
-      />
-
-      <Card variant="outlined">
-        <CardContent>
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 3,
+          gridTemplateColumns: { xs: '1fr', md: '1.3fr 0.7fr' },
+          alignItems: 'start',
+        }}
+      >
+        <Card variant="outlined">
+          <CardContent>
           <Stack spacing={2}>
             <Box>
               <Typography variant="subtitle1" gutterBottom>
@@ -146,7 +156,7 @@ export function AttemptPage() {
 
         <Divider />
 
-        <CardActions>
+        <CardActions sx={{ flexWrap: 'wrap', gap: 1 }}>
           <Button onClick={handlePrevious} disabled={currentIndex === 0}>
             Previous
           </Button>
@@ -156,12 +166,32 @@ export function AttemptPage() {
           >
             Next
           </Button>
+          <Button
+            variant={reviewed[currentQuestion.id] ? 'contained' : 'outlined'}
+            color={reviewed[currentQuestion.id] ? 'warning' : 'inherit'}
+            onClick={handleToggleReview}
+          >
+            {reviewed[currentQuestion.id] ? 'Unmark review' : 'Mark for review'}
+          </Button>
           <Box sx={{ flexGrow: 1 }} />
           <Button variant="contained" onClick={handleSubmit}>
             Submit
           </Button>
         </CardActions>
       </Card>
+
+      <Card variant="outlined" sx={{ height: 'fit-content' }}>
+        <CardContent>
+          <QuestionStepper
+            questions={quiz.questions}
+            currentIndex={currentIndex}
+            onSelect={setCurrentIndex}
+            answers={answers}
+            reviewStatus={reviewed}
+          />
+        </CardContent>
+      </Card>
+    </Box>
 
       <Button variant="outlined" onClick={() => navigate('/quizzes')}>
         Back to quiz list

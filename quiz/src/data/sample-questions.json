@@ -10,8 +10,8 @@
   "author": "Admin User",
   "createdAt": "2026-06-19T12:00:00.000Z",
   "updatedAt": "2026-06-19T12:00:00.000Z",
-  "questionCount": 3,
-  "timeLimit": 10,
+  "questionCount": 20,
+  "timeLimit": 20,
   "passingScore": 70,
   "status": "published",
   "questions": [
@@ -47,6 +47,193 @@
         "data-index"
       ],
       "correctOptionIndex": 0
+    },
+    {
+      "id": "q4",
+      "text": "What does JSX compile to?",
+      "options": [
+        "HTML",
+        "JavaScript objects",
+        "CSS rules",
+        "JSON"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q5",
+      "text": "Which prop is used to pass data from parent to child?",
+      "options": [
+        "state",
+        "props",
+        "context",
+        "ref"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q6",
+      "text": "How do you create a new state variable in a React component?",
+      "options": [
+        "const [value, setValue] = useState()",
+        "useState = value",
+        "state = useState()",
+        "setState(value)"
+      ],
+      "correctOptionIndex": 0
+    },
+    {
+      "id": "q7",
+      "text": "Which hook runs after every render by default?",
+      "options": [
+        "useMemo",
+        "useEffect",
+        "useCallback",
+        "useReducer"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q8",
+      "text": "What is the default HTML element returned by a <code>div</code> component?",
+      "options": [
+        "span",
+        "div",
+        "section",
+        "article"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q9",
+      "text": "How can you prevent a component from re-rendering?",
+      "options": [
+        "useMemo",
+        "useCallback",
+        "React.memo",
+        "All of the above"
+      ],
+      "correctOptionIndex": 3
+    },
+    {
+      "id": "q10",
+      "text": "What is the purpose of the key prop in a list?",
+      "options": [
+        "To provide styling",
+        "To identify elements for reconciliation",
+        "To validate each item",
+        "To set the HTML id"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q11",
+      "text": "Which method is used to update state from a previous value?",
+      "options": [
+        "setState(current => newValue)",
+        "setState(newValue)",
+        "useState(newValue)",
+        "updateState(newValue)"
+      ],
+      "correctOptionIndex": 0
+    },
+    {
+      "id": "q12",
+      "text": "How do you create a context object in React?",
+      "options": [
+        "React.createContext()",
+        "React.useContext()",
+        "React.createState()",
+        "React.createElement()"
+      ],
+      "correctOptionIndex": 0
+    },
+    {
+      "id": "q13",
+      "text": "Which hook is used for a reducer pattern?",
+      "options": [
+        "useState",
+        "useReducer",
+        "useEffect",
+        "useContext"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q14",
+      "text": "What should a component return?",
+      "options": [
+        "A string",
+        "JSX or null",
+        "An object",
+        "An array"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q15",
+      "text": "In React, what does lifting state up mean?",
+      "options": [
+        "Moving state to a parent component",
+        "Copying state to a child component",
+        "Using more useState hooks",
+        "Storing state in localStorage"
+      ],
+      "correctOptionIndex": 0
+    },
+    {
+      "id": "q16",
+      "text": "Which React hook returns a memoized value?",
+      "options": [
+        "useCallback",
+        "useMemo",
+        "useEffect",
+        "useRef"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q17",
+      "text": "How do you render conditional content in JSX?",
+      "options": [
+        "if (condition) return <div />",
+        "condition && <Component />",
+        "condition ? <A/> : <B/>",
+        "Both 2 and 3"
+      ],
+      "correctOptionIndex": 3
+    },
+    {
+      "id": "q18",
+      "text": "What does the useRef hook provide?",
+      "options": [
+        "A mutable ref object",
+        "A state variable",
+        "A context object",
+        "A reducer function"
+      ],
+      "correctOptionIndex": 0
+    },
+    {
+      "id": "q19",
+      "text": "Which feature helps avoid prop drilling?",
+      "options": [
+        "Redux",
+        "Context API",
+        "useEffect",
+        "React Router"
+      ],
+      "correctOptionIndex": 1
+    },
+    {
+      "id": "q20",
+      "text": "What does React.memo help with?",
+      "options": [
+        "Event handling",
+        "Data fetching",
+        "Performance by memoizing components",
+        "Routing"
+      ],
+      "correctOptionIndex": 2
     }
   ]
 }
