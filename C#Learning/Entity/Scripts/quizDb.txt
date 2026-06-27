@@ -1,0 +1,82 @@
+﻿CREATE TABLE Quizzes (
+    QuizID INT PRIMARY KEY IDENTITY(1,1),
+    Title NVARCHAR(200) NOT NULL,
+    Description NVARCHAR(500),
+    Status NVARCHAR(50) NOT NULL DEFAULT 'Draft',
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    UpdatedDate DATETIME DEFAULT GETDATE(),
+    CONSTRAINT CK_Quizzes_Status CHECK (Status IN ('Draft', 'Active', 'Inactive', 'Published', 'Archived')),
+    CONSTRAINT CK_Quizzes_IsDeleted CHECK (IsDeleted IN (0, 1))
+);
+
+CREATE TABLE Questions (
+    QuestionID INT PRIMARY KEY IDENTITY(1,1),
+    QuizID INT NOT NULL,
+    QuestionText NVARCHAR(1000) NOT NULL,
+    Option1 NVARCHAR(500) NOT NULL,
+    Option2 NVARCHAR(500) NOT NULL,
+    Option3 NVARCHAR(500) NOT NULL,
+    Option4 NVARCHAR(500) NOT NULL,
+    CorrectOption INT NOT NULL CHECK (CorrectOption BETWEEN 1 AND 4),
+    DisplayOrder INT NOT NULL DEFAULT 1,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (QuizID) REFERENCES Quizzes(QuizID) ON DELETE CASCADE,
+    CONSTRAINT CK_Questions_IsActive CHECK (IsActive IN (0, 1))
+);
+
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY IDENTITY(1,1),
+    UserName NVARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Password NVARCHAR(255) NOT NULL,
+    Role NVARCHAR(50) NOT NULL DEFAULT 'Employee',
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    UpdatedDate DATETIME DEFAULT GETDATE(),
+    CONSTRAINT CK_Users_Role CHECK (Role IN ('Admin', 'Employee')),
+    CONSTRAINT CK_Users_IsActive CHECK (IsActive IN (0, 1))
+);
+
+CREATE TABLE QuizAttempts (
+    AttemptID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NOT NULL,
+    QuizID INT NOT NULL,
+    Score INT NOT NULL CHECK (Score >= 0),
+    MaxPossibleScore INT NOT NULL,
+    PercentageScore DECIMAL(5, 2),
+    AttemptedQuestions INT NOT NULL CHECK (AttemptedQuestions > 0),
+    TimeTaken INT,
+    CompletedDate DATETIME DEFAULT GETDATE(),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (QuizID) REFERENCES Quizzes(QuizID) ON DELETE CASCADE,
+    CONSTRAINT CK_QuizAttempts_PercentageScore CHECK (PercentageScore BETWEEN 0 AND 100),
+    CONSTRAINT CK_QuizAttempts_Score CHECK (Score <= MaxPossibleScore)
+);
+
+CREATE TABLE AttemptDetails (
+    DetailID INT PRIMARY KEY IDENTITY(1,1),
+    AttemptID INT NOT NULL,
+    QuestionID INT NOT NULL,
+    UserAnswer INT NOT NULL CHECK (UserAnswer BETWEEN 1 AND 4),
+    CorrectAnswer INT NOT NULL CHECK (CorrectAnswer BETWEEN 1 AND 4),
+    IsCorrect BIT NOT NULL,
+    TimeTaken INT,
+    FOREIGN KEY (AttemptID) REFERENCES QuizAttempts(AttemptID) ON DELETE CASCADE,
+    FOREIGN KEY (QuestionID) REFERENCES Questions(QuestionID) ON DELETE NO ACTION,
+    CONSTRAINT CK_AttemptDetails_IsCorrect CHECK (IsCorrect IN (0, 1))
+);
+
+CREATE TABLE AuditLog (
+    LogID INT PRIMARY KEY IDENTITY(1,1),
+    EntityType NVARCHAR(50) NOT NULL,
+    EntityID INT NOT NULL,
+    ActionType NVARCHAR(50) NOT NULL,
+    PerformedBy INT,
+    OldValues NVARCHAR(MAX),
+    NewValues NVARCHAR(MAX),
+    ActionDate DATETIME DEFAULT GETDATE(),
+    CONSTRAINT CK_AuditLog_ActionType CHECK (ActionType IN ('CREATE', 'UPDATE', 'DELETE'))
+);

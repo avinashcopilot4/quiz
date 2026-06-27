@@ -1,0 +1,69 @@
+﻿Object-Oriented Programming (OOP) Notes
+
+1. Encapsulation
+- Definition: Wrapping data (fields) and methods (behavior) together inside a class.
+- Purpose: Protects internal state and exposes only necessary functionality.
+- Achieved using: Access modifiers (private, public, protected).
+- Example:
+  class Quiz {
+      private int score; // hidden data
+      public void AddScore(int points) { score += points; }
+      public int GetScore() { return score; }
+  }
+
+2. Abstraction
+- Definition: Hiding implementation details and showing only essential features.
+- Achieved using: Abstract classes and interfaces.
+- Example (abstract class):
+  abstract class Animal {
+      public void Sleep() { Console.WriteLine("Animal sleeps"); }
+      public abstract void Speak();
+  }
+  class Dog : Animal {
+      public override void Speak() { Console.WriteLine("Woof!"); }
+  }
+
+3. Inheritance
+- Definition: A class can inherit fields and methods from another class.
+- Purpose: Promotes code reuse and establishes "is-a" relationships.
+- Example:
+  class User { public string Name { get; set; } }
+  class Admin : User { public void DeleteQuiz() { /* ... */ } }
+
+4. Polymorphism
+- Definition: Same method behaves differently depending on the object type.
+- Types:
+  a) Compile-time (Method Overloading)
+  b) Runtime (Method Overriding)
+- Example (method overriding):
+  class Animal { public virtual void Speak() { Console.WriteLine("Generic sound"); } }
+  class Cat : Animal { public override void Speak() { Console.WriteLine("Meow!"); } }
+  class Dog : Animal { public override void Speak() { Console.WriteLine("Woof!"); } }
+
+5. Interfaces
+- Definition: A contract that defines methods/properties without implementation.
+- A class can implement multiple interfaces.
+- Example:
+  interface IWorker { void Work(); }
+  interface IStudent { void Study(); }
+  class Intern : IWorker, IStudent {
+      public void Work() { Console.WriteLine("Intern works"); }
+      public void Study() { Console.WriteLine("Intern studies"); }
+  }
+
+6. Single Class Inheritance Rule
+- In C#, a class can inherit from only ONE base class.
+- Reason: Multiple class inheritance causes ambiguity (diamond problem).
+- Example (not allowed):
+  class A { public void Show() { Console.WriteLine("A"); } }
+  class B { public void Show() { Console.WriteLine("B"); } }
+  class C : A, B { } // ❌ Compiler error
+- Solution: Use multiple interfaces instead of multiple classes.
+
+Summary:
+- Encapsulation → Protects data
+- Abstraction → Hides complexity
+- Inheritance → Reuses code
+- Polymorphism → Provides flexibility
+- Interfaces → Allow multiple contracts
+- Single class inheritance → Avoids ambiguity
