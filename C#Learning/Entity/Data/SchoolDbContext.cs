@@ -7,6 +7,10 @@ namespace Entity.Data;
 
 public partial class SchoolDbContext : DbContext
 {
+    public SchoolDbContext()
+    {
+    }
+
     public SchoolDbContext(DbContextOptions<SchoolDbContext> options)
         : base(options)
     {
@@ -18,11 +22,17 @@ public partial class SchoolDbContext : DbContext
 
     public virtual DbSet<Question> Questions { get; set; }
 
-    public virtual DbSet<Entity.Models.Quiz> Quizzes { get; set; }
+    public virtual DbSet<Quiz> Quizzes { get; set; }
 
     public virtual DbSet<QuizAttempt> QuizAttempts { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<UserRole> UserRoles { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=.;Database=QuizDb;Integrated Security=true;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,7 +91,7 @@ public partial class SchoolDbContext : DbContext
                 .HasConstraintName("FK__Questions__QuizI__5629CD9C");
         });
 
-        modelBuilder.Entity<Entity.Models.Quiz>(entity =>
+        modelBuilder.Entity<Quiz>(entity =>
         {
             entity.HasKey(e => e.QuizId).HasName("PK__Quizzes__8B42AE6E78DB454C");
 
@@ -133,16 +143,29 @@ public partial class SchoolDbContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.Gender).HasMaxLength(20);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.Password).HasMaxLength(255);
-            entity.Property(e => e.Gender).HasMaxLength(10);
-            entity.Property(e => e.Role)
-                .HasMaxLength(50)
-                .HasDefaultValue("employee");
             entity.Property(e => e.UpdatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.UserName).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<UserRole>(entity =>
+        {
+            entity.HasKey(e => e.UserRoleId).HasName("PK__UserRole__3D978A55FFCF27C7");
+
+            entity.Property(e => e.UserRoleId).HasColumnName("UserRoleID");
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.RoleName).HasMaxLength(50);
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserRoles)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_UserRoles_Users");
         });
 
         OnModelCreatingPartial(modelBuilder);
