@@ -1,6 +1,5 @@
 <Solution>
   <Project Path="BusinessCore/BusinessCore.csproj" Id="2782b19c-917e-4613-8979-a6da02cd3865" />
-  <Project Path="C#Learning/C#Learning.csproj" />
   <Project Path="Common/Common.csproj" Id="deee644e-927d-49ce-9664-07da53d3b770" />
   <Project Path="Entity/Entity.csproj" Id="dfe12cc8-7fab-4b10-a007-942fac4aab19" />
   <Project Path="Quiz/QuizApp.csproj" Id="51cf2f6c-199c-40a3-ad95-c72ee9bd750b" />
