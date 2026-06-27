@@ -1,6 +1,8 @@
 ﻿using BusinessCore.Interfaces;
+using Common.DTO.Quiz;
 using Entity.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace QuizApp.Controllers;
 
@@ -16,19 +18,21 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
+    public async Task<ActionResult<IEnumerable<QuestionDto>>> GetQuestions()
     {
-        return Ok(await _questionService.GetAllQuestionsAsync());
+        var questions = await _questionService.GetAllQuestionsAsync();
+        return Ok(questions.Select(ToDto));
     }
 
     [HttpGet("by-quiz/{quizid:int}")]
-    public async Task<ActionResult<IEnumerable<Question>>> GetQuestionsByQuiz(int quizid)
+    public async Task<ActionResult<IEnumerable<QuestionDto>>> GetQuestionsByQuiz(int quizid)
     {
-        return Ok(await _questionService.GetQuestionsByQuizIdAsync(quizid));
+        var questions = await _questionService.GetQuestionsByQuizIdAsync(quizid);
+        return Ok(questions.Select(ToDto));
     }
 
     [HttpGet("{questionid:int}")]
-    public async Task<ActionResult<Question>> GetQuestion(int questionid)
+    public async Task<ActionResult<QuestionDto>> GetQuestion(int questionid)
     {
         var question = await _questionService.GetQuestionByIdAsync(questionid);
         if (question == null)
@@ -36,14 +40,14 @@ public class QuestionsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(question);
+        return Ok(ToDto(question));
     }
 
     [HttpPost]
-    public async Task<ActionResult<Question>> CreateQuestion(Question question)
+    public async Task<ActionResult<QuestionDto>> CreateQuestion(Question question)
     {
-        await _questionService.CreateQuestionAsync(question);
-        return CreatedAtAction(nameof(GetQuestion), new { questionid = question.QuestionId }, question);
+        var created = await _questionService.CreateQuestionAsync(question);
+        return CreatedAtAction(nameof(GetQuestion), new { questionid = created.QuestionId }, ToDto(created));
     }
 
     [HttpPut("{questionid:int}")]
@@ -73,5 +77,16 @@ public class QuestionsController : ControllerBase
 
         await _questionService.DeleteQuestionAsync(questionid);
         return NoContent();
+    }
+
+    private static QuestionDto ToDto(Question question)
+    {
+        return new QuestionDto
+        {
+            Id = question.QuestionId.ToString(),
+            Text = question.QuestionText,
+            Options = new List<string> { question.Option1, question.Option2, question.Option3, question.Option4 },
+            CorrectOptionIndex = question.CorrectOption,
+        };
     }
 }

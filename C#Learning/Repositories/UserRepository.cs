@@ -18,16 +18,31 @@ public class UserRepository : IUserRepository
         _context = schoolDbContext;
     }
 
+    private static string NormalizeRole(string? role)
+    {
+        if (string.IsNullOrWhiteSpace(role))
+        {
+            return "employee";
+        }
+
+        return role.Trim().ToLowerInvariant() switch
+        {
+            "admin" => "admin",
+            "employee" => "employee",
+            _ => "employee"
+        };
+    }
+
     public async Task<IEnumerable<UserDto>> GetUsersAsync()
     {
         return await _context.Users
             .Select(user => new UserDto
             {
-                UserId = user.UserId,
+                Id = user.UserId.ToString(),
+                Name = user.UserName,
                 Email = user.Email,
-                UserName = user.UserName,
-                Role = user.Role,
-                IsActive = user.IsActive,
+                Roles = new List<string> { NormalizeRole(user.Role) },
+                ActiveRole = NormalizeRole(user.Role),
             })
             .ToListAsync();
     }
@@ -38,17 +53,33 @@ public class UserRepository : IUserRepository
             .Where(user => user.UserId == userId)
             .Select(user => new UserDto
             {
-                UserId = user.UserId,
+                Id = user.UserId.ToString(),
+                Name = user.UserName,
                 Email = user.Email,
-                UserName = user.UserName,
-                Role = user.Role,
-                IsActive = user.IsActive,
+                Roles = new List<string> { NormalizeRole(user.Role) },
+                ActiveRole = NormalizeRole(user.Role),
+            })
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<UserDto?> AuthenticateUserAsync(string email, string password)
+    {
+        return await _context.Users
+            .Where(user => user.Email.ToLower() == email.ToLower() && user.Password == password && user.IsActive)
+            .Select(user => new UserDto
+            {
+                Id = user.UserId.ToString(),
+                Name = user.UserName,
+                Email = user.Email,
+                Roles = new List<string> { NormalizeRole(user.Role) },
+                ActiveRole = NormalizeRole(user.Role),
             })
             .FirstOrDefaultAsync();
     }
 
     public async Task<User> AddUserAsync(User user)
     {
+        user.Role = NormalizeRole(user.Role);
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return user;

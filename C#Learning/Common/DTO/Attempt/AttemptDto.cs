@@ -1,32 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Common.DTO.Attempt;
 
 namespace Common.DTO.Attempt;
 
 public class AttemptDto
 {
     [JsonPropertyName("id")]
-    public int AttemptId { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     [JsonPropertyName("quizId")]
-    public int QuizId { get; set; }
+    public string QuizId { get; set; } = string.Empty;
 
     [JsonPropertyName("employeeId")]
-    public int EmployeeId { get; set; }
+    public string EmployeeId { get; set; } = string.Empty;
 
+    [JsonPropertyName("answers")]
     public List<AnswerDto> Answers { get; set; } = new();
 
+    [JsonPropertyName("score")]
     public int Score { get; set; }
-
-    public int MaxPossibleScore { get; set; }
-
-    public decimal? PercentageScore { get; set; }
-
-    public int AttemptedQuestions { get; set; }
-
-    public int? TimeTaken { get; set; }
 
     [JsonPropertyName("startedAt")]
     public DateTime? StartedAt { get; set; }

@@ -2,12 +2,29 @@ using BusinessCore.Interfaces;
 using Common.DTO.User;
 using Entity.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 [Route("api/users")]
 [ApiController]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+
+    private static string NormalizeRole(string? role)
+    {
+        if (string.IsNullOrWhiteSpace(role))
+        {
+            return "employee";
+        }
+
+        return role.Trim().ToLowerInvariant() switch
+        {
+            "admin" => "admin",
+            "employee" => "employee",
+            _ => "employee"
+        };
+    }
 
     public UsersController(IUserService userService)
     {
@@ -33,20 +50,44 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    [HttpPost("login")]
+    public async Task<ActionResult<UserDto>> Login([FromBody] LoginRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+        {
+            return BadRequest(new { message = "Email and password are required." });
+        }
+
+        var normalizedRole = NormalizeRole(request.Role);
+        var user = await _userService.AuthenticateUserAsync(request.Email, request.Password);
+        if (user == null)
+        {
+            return Unauthorized(new { message = "Invalid credentials." });
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Role) && !string.Equals(user.ActiveRole, normalizedRole, StringComparison.OrdinalIgnoreCase))
+        {
+            return Unauthorized(new { message = "Selected role is not assigned to this user." });
+        }
+
+        return Ok(user);
+    }
+
     [HttpPost]
     public async Task<ActionResult<UserDto>> CreateUser(User user)
     {
+        user.Role = NormalizeRole(user.Role);
         var created = await _userService.CreateUserAsync(user);
         var userDto = new UserDto
         {
-            UserId = created.UserId,
-            UserName = created.UserName,
+            Id = created.UserId.ToString(),
+            Name = created.UserName,
             Email = created.Email,
-            Role = created.Role,
-            IsActive = created.IsActive,
+            Roles = new List<string> { NormalizeRole(created.Role) },
+            ActiveRole = NormalizeRole(created.Role),
         };
 
-        return CreatedAtAction(nameof(GetUser), new { userid = userDto.UserId }, userDto);
+        return CreatedAtAction(nameof(GetUser), new { userid = created.UserId }, userDto);
     }
 
     [HttpPut("{userid:int}")]

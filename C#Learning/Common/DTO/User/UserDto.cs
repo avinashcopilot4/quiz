@@ -1,20 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Common.DTO.User
 {
     public class UserDto
     {
-        public int UserId { get; set; }
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = string.Empty;
 
-        public string UserName { get; set; } = null!;
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
 
-        public string Email { get; set; } = null!;
+        [JsonPropertyName("email")]
+        public string Email { get; set; } = string.Empty;
 
-        public string Role { get; set; } = null!;
+        [JsonPropertyName("roles")]
+        public List<string> Roles { get; set; } = new();
 
-        public bool IsActive { get; set; }
-
+        [JsonPropertyName("activeRole")]
+        public string ActiveRole { get; set; } = "employee";
     }
 }

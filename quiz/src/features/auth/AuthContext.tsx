@@ -1,7 +1,7 @@
 import { createContext, useEffect, useMemo, useState } from 'react'
 import type { User } from '../../types/user.types'
 import type { LoginCredentials } from '../../api/authApi'
-import { login as authLogin } from '../../api/authApi'
+import { login as authLogin, normalizeUserRole, normalizeUserRoles } from '../../api/authApi'
 
 interface AuthContextValue {
   user: User | null
@@ -12,10 +12,22 @@ interface AuthContextValue {
 
 const storedUser = typeof window !== 'undefined' ? window.localStorage.getItem('quiz-app-user') : null
 
+function normalizeStoredUser(user: User | null): User | null {
+  if (!user) {
+    return null
+  }
+
+  return {
+    ...user,
+    roles: normalizeUserRoles(user.roles),
+    activeRole: normalizeUserRole(user.activeRole),
+  }
+}
+
 export const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(storedUser ? JSON.parse(storedUser) : null)
+  const [user, setUser] = useState<User | null>(storedUser ? normalizeStoredUser(JSON.parse(storedUser)) : null)
 
   useEffect(() => {
     if (user) {
@@ -37,9 +49,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null)
       },
       switchRole: (role: User['activeRole']) => {
-        setUser((current) =>
-          current && current.roles.includes(role) ? { ...current, activeRole: role } : current,
-        )
+        setUser((current) => {
+          if (!current) {
+            return current
+          }
+
+          const normalizedRole = normalizeUserRole(role)
+          return current.roles.includes(normalizedRole)
+            ? { ...current, activeRole: normalizedRole }
+            : current
+        })
       },
     }),
     [user],

@@ -138,7 +138,7 @@ public partial class SchoolDbContext : DbContext
             entity.Property(e => e.Gender).HasMaxLength(10);
             entity.Property(e => e.Role)
                 .HasMaxLength(50)
-                .HasDefaultValue("Employee");
+                .HasDefaultValue("employee");
             entity.Property(e => e.UpdatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");

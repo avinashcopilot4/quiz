@@ -1,6 +1,8 @@
 using BusinessCore.Interfaces;
+using Common.DTO.Attempt;
 using Entity.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace QuizApp.Controllers;
 
@@ -16,25 +18,28 @@ public class AttemptsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<QuizAttempt>>> GetAttempts()
+    public async Task<ActionResult<IEnumerable<AttemptDto>>> GetAttempts()
     {
-        return Ok(await _attemptService.GetAllAttemptsAsync());
+        var attempts = await _attemptService.GetAllAttemptsAsync();
+        return Ok(attempts.Select(ToDto));
     }
 
     [HttpGet("by-employee/{userid:int}")]
-    public async Task<ActionResult<IEnumerable<QuizAttempt>>> GetAttemptsByEmployee(int userid)
+    public async Task<ActionResult<IEnumerable<AttemptDto>>> GetAttemptsByEmployee(int userid)
     {
-        return Ok(await _attemptService.GetAttemptsByEmployeeAsync(userid));
+        var attempts = await _attemptService.GetAttemptsByEmployeeAsync(userid);
+        return Ok(attempts.Select(ToDto));
     }
 
     [HttpGet("by-quiz/{quizid:int}")]
-    public async Task<ActionResult<IEnumerable<QuizAttempt>>> GetAttemptsByQuiz(int quizid)
+    public async Task<ActionResult<IEnumerable<AttemptDto>>> GetAttemptsByQuiz(int quizid)
     {
-        return Ok(await _attemptService.GetAttemptsByQuizAsync(quizid));
+        var attempts = await _attemptService.GetAttemptsByQuizAsync(quizid);
+        return Ok(attempts.Select(ToDto));
     }
 
     [HttpGet("{attemptid:int}")]
-    public async Task<ActionResult<QuizAttempt>> GetAttempt(int attemptid)
+    public async Task<ActionResult<AttemptDto>> GetAttempt(int attemptid)
     {
         var attempt = await _attemptService.GetAttemptByIdAsync(attemptid);
         if (attempt == null)
@@ -42,13 +47,31 @@ public class AttemptsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(attempt);
+        return Ok(ToDto(attempt));
     }
 
     [HttpPost]
-    public async Task<ActionResult<QuizAttempt>> CreateAttempt(QuizAttempt attempt)
+    public async Task<ActionResult<AttemptDto>> CreateAttempt(QuizAttempt attempt)
     {
-        await _attemptService.CreateAttemptAsync(attempt);
-        return CreatedAtAction(nameof(GetAttempt), new { attemptid = attempt.AttemptId }, attempt);
+        var created = await _attemptService.CreateAttemptAsync(attempt);
+        return CreatedAtAction(nameof(GetAttempt), new { attemptid = created.AttemptId }, ToDto(created));
+    }
+
+    private static AttemptDto ToDto(QuizAttempt attempt)
+    {
+        return new AttemptDto
+        {
+            Id = attempt.AttemptId.ToString(),
+            QuizId = attempt.QuizId.ToString(),
+            EmployeeId = attempt.UserId.ToString(),
+            Answers = attempt.AttemptDetails?.Select(detail => new AnswerDto
+            {
+                QuestionId = detail.QuestionId,
+                SelectedOptionIndex = detail.UserAnswer,
+            }).ToList() ?? new List<AnswerDto>(),
+            Score = attempt.Score,
+            StartedAt = attempt.CompletedDate,
+            SubmittedAt = attempt.CompletedDate,
+        };
     }
 }

@@ -6,10 +6,12 @@ namespace Common.DTO.Quiz;
 public class QuestionDto
 {
     [JsonPropertyName("id")]
-    public int QuestionId { get; set; }
+    public string Id { get; set; } = string.Empty;
 
-    public string Text { get; set; } = null!;
+    [JsonPropertyName("text")]
+    public string Text { get; set; } = string.Empty;
 
+    [JsonPropertyName("options")]
     public List<string> Options { get; set; } = new();
 
     [JsonPropertyName("correctOptionIndex")]

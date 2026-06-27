@@ -26,6 +26,11 @@ public class UserService : IUserService
         return _userRepository.GetUserByIdAsync(userId);
     }
 
+    public Task<UserDto?> AuthenticateUserAsync(string email, string password)
+    {
+        return _userRepository.AuthenticateUserAsync(email, password);
+    }
+
     public Task<User> CreateUserAsync(User user)
     {
         return _userRepository.AddUserAsync(user);

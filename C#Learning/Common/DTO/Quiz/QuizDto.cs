@@ -6,37 +6,50 @@ namespace Common.DTO.Quiz;
 public class QuizDto
 {
     [JsonPropertyName("id")]
-    public int QuizId { get; set; }
+    public string Id { get; set; } = string.Empty;
 
-    public string Title { get; set; } = null!;
+    [JsonPropertyName("title")]
+    public string Title { get; set; } = string.Empty;
 
+    [JsonPropertyName("description")]
     public string? Description { get; set; }
 
-    public string Topic { get; set; } = null!;
+    [JsonPropertyName("topic")]
+    public string Topic { get; set; } = "General";
 
-    public string Language { get; set; } = null!;
+    [JsonPropertyName("language")]
+    public string Language { get; set; } = "English";
 
-    public string Difficulty { get; set; } = null!;
+    [JsonPropertyName("difficulty")]
+    public string Difficulty { get; set; } = "Intermediate";
 
+    [JsonPropertyName("tags")]
     public List<string> Tags { get; set; } = new();
 
-    public string CreatedBy { get; set; } = null!;
+    [JsonPropertyName("createdBy")]
+    public string CreatedBy { get; set; } = "admin";
 
-    public string Author { get; set; } = null!;
-
-    public int QuestionCount { get; set; }
-
-    public int? TimeLimit { get; set; }
-
-    public int? PassingScore { get; set; }
-
-    public string Status { get; set; } = null!;
+    [JsonPropertyName("author")]
+    public string Author { get; set; } = "Admin";
 
     [JsonPropertyName("createdAt")]
-    public DateTime? CreatedDate { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
     [JsonPropertyName("updatedAt")]
-    public DateTime? UpdatedDate { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
+    [JsonPropertyName("questionCount")]
+    public int QuestionCount { get; set; }
+
+    [JsonPropertyName("timeLimit")]
+    public int? TimeLimit { get; set; }
+
+    [JsonPropertyName("passingScore")]
+    public int? PassingScore { get; set; }
+
+    [JsonPropertyName("questions")]
     public List<QuestionDto> Questions { get; set; } = new();
+
+    [JsonPropertyName("status")]
+    public string Status { get; set; } = "draft";
 }
