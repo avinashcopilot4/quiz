@@ -202,6 +202,7 @@ export function QuizEditorPage() {
     } else {
       await saveQuiz(quizToSave)
     }
+
     navigate('/admin/quizzes')
   }
 

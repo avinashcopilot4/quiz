@@ -21,7 +21,10 @@ function mapQuiz(quiz: any): QuizModel {
       id: question.id,
       text: question.text,
       options: question.options ?? [],
-      correctOptionIndex: question.correctOptionIndex ?? 0,
+      correctOptionIndex: (() => {
+        const value = Number(question.correctOptionIndex ?? 0)
+        return value > 0 ? value - 1 : 0
+      })(),
     })),
     status: (quiz.status ?? 'draft').toLowerCase() as QuizModel['status'],
   }
@@ -47,33 +50,48 @@ export async function createQuiz(quiz: QuizModel): Promise<QuizModel> {
     description: quiz.description,
     status: quiz.status,
     questions: quiz.questions.map((question) => ({
-      questionText: question.text,
-      option1: question.options[0],
-      option2: question.options[1],
-      option3: question.options[2],
-      option4: question.options[3],
-      correctOption: question.correctOptionIndex + 1,
+      text: question.text,
+      options: [
+        question.options[0] ?? '',
+        question.options[1] ?? '',
+        question.options[2] ?? '',
+        question.options[3] ?? '',
+      ],
+      correctOptionIndex: (question.correctOptionIndex ?? 0) + 1,
     })),
   })
   return mapQuiz(created)
 }
 
 export async function saveQuiz(quiz: QuizModel): Promise<QuizModel> {
-  const updated = await apiClient.put<any>(`/quizzes/${quiz.id}`, {
-    quizId: Number(quiz.id),
+  const payload = {
+    id: String(quiz.id),
     title: quiz.title,
     description: quiz.description,
     status: quiz.status,
     questions: quiz.questions.map((question) => ({
-      questionId: Number(question.id),
-      questionText: question.text,
-      option1: question.options[0],
-      option2: question.options[1],
-      option3: question.options[2],
-      option4: question.options[3],
-      correctOption: question.correctOptionIndex + 1,
+      id: Number(question.id) || 0,
+      text: question.text,
+      options: [
+        question.options[0] ?? '',
+        question.options[1] ?? '',
+        question.options[2] ?? '',
+        question.options[3] ?? '',
+      ],
+      correctOptionIndex: (question.correctOptionIndex ?? 0) + 1,
     })),
-  })
+  }
+
+  const updated = await apiClient.put<any>(`/quizzes?quizid=${encodeURIComponent(quiz.id)}`, payload)
+
+  if (!updated) {
+    return {
+      ...quiz,
+      updatedAt: new Date().toISOString(),
+      questionCount: quiz.questions.length,
+    }
+  }
+
   return mapQuiz(updated)
 }
 
