@@ -6,7 +6,7 @@ namespace Common.DTO.Quiz;
 public class QuestionDto
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; } = string.Empty;
+    public int Id { get; set; }
 
     [JsonPropertyName("text")]
     public string Text { get; set; } = string.Empty;

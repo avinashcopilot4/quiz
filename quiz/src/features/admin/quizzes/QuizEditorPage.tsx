@@ -30,7 +30,7 @@ interface QuizEditorErrors {
 }
 
 const createEmptyQuestion = (): QuestionModel => ({
-  id: `q-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  id: "",
   text: '',
   options: ['', '', '', ''],
   correctOptionIndex: 0,

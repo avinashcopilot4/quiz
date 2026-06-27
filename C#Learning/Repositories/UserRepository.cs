@@ -35,51 +35,64 @@ public class UserRepository : IUserRepository
 
     public async Task<IEnumerable<UserDto>> GetUsersAsync()
     {
-        return await _context.Users
-            .Select(user => new UserDto
-            {
-                Id = user.UserId.ToString(),
-                Name = user.UserName,
-                Email = user.Email,
-                Roles = new List<string> { NormalizeRole(user.Role) },
-                ActiveRole = NormalizeRole(user.Role),
-            })
+        var users = await _context.Users
+            .Include(u => u.UserRoles)
             .ToListAsync();
+
+        return users.Select(user => new UserDto
+        {
+            Id = user.UserId.ToString(),
+            Name = user.UserName,
+            Email = user.Email,
+            Roles = user.UserRoles.Select(ur => NormalizeRole(ur.RoleName)).Distinct().ToList(),
+            ActiveRole = NormalizeRole(user.UserRoles.FirstOrDefault()?.RoleName) ?? "employee",
+        }).ToList();
     }
 
     public async Task<UserDto?> GetUserByIdAsync(int userId)
     {
-        return await _context.Users
-            .Where(user => user.UserId == userId)
-            .Select(user => new UserDto
-            {
-                Id = user.UserId.ToString(),
-                Name = user.UserName,
-                Email = user.Email,
-                Roles = new List<string> { NormalizeRole(user.Role) },
-                ActiveRole = NormalizeRole(user.Role),
-            })
-            .FirstOrDefaultAsync();
+        var user = await _context.Users
+            .Include(u => u.UserRoles)
+            .FirstOrDefaultAsync(u => u.UserId == userId);
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        return new UserDto
+        {
+            Id = user.UserId.ToString(),
+            Name = user.UserName,
+            Email = user.Email,
+            Roles = user.UserRoles.Select(ur => NormalizeRole(ur.RoleName)).Distinct().ToList(),
+            ActiveRole = NormalizeRole(user.UserRoles.FirstOrDefault()?.RoleName) ?? "employee",
+        };
     }
 
     public async Task<UserDto?> AuthenticateUserAsync(string email, string password)
     {
-        return await _context.Users
-            .Where(user => user.Email.ToLower() == email.ToLower() && user.Password == password && user.IsActive)
-            .Select(user => new UserDto
-            {
-                Id = user.UserId.ToString(),
-                Name = user.UserName,
-                Email = user.Email,
-                Roles = new List<string> { NormalizeRole(user.Role) },
-                ActiveRole = NormalizeRole(user.Role),
-            })
-            .FirstOrDefaultAsync();
+        var user = await _context.Users
+            .Include(u => u.UserRoles)
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() && u.Password == password && u.IsActive);
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        return new UserDto
+        {
+            Id = user.UserId.ToString(),
+            Name = user.UserName,
+            Email = user.Email,
+            Roles = user.UserRoles.Select(ur => NormalizeRole(ur.RoleName)).Distinct().ToList(),
+            ActiveRole = NormalizeRole(user.UserRoles.FirstOrDefault()?.RoleName) ?? "employee",
+        };
     }
 
     public async Task<User> AddUserAsync(User user)
     {
-        user.Role = NormalizeRole(user.Role);
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return user;

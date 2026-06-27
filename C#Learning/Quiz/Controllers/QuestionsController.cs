@@ -83,7 +83,7 @@ public class QuestionsController : ControllerBase
     {
         return new QuestionDto
         {
-            Id = question.QuestionId.ToString(),
+            Id = question.QuestionId,
             Text = question.QuestionText,
             Options = new List<string> { question.Option1, question.Option2, question.Option3, question.Option4 },
             CorrectOptionIndex = question.CorrectOption,

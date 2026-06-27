@@ -76,16 +76,12 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<UserDto>> CreateUser(User user)
     {
-        user.Role = NormalizeRole(user.Role);
         var created = await _userService.CreateUserAsync(user);
-        var userDto = new UserDto
+        var userDto = await _userService.GetUserByIdAsync(created.UserId);
+        if (userDto == null)
         {
-            Id = created.UserId.ToString(),
-            Name = created.UserName,
-            Email = created.Email,
-            Roles = new List<string> { NormalizeRole(created.Role) },
-            ActiveRole = NormalizeRole(created.Role),
-        };
+            return StatusCode(500, "Failed to retrieve created user.");
+        }
 
         return CreatedAtAction(nameof(GetUser), new { userid = created.UserId }, userDto);
     }

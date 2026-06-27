@@ -25,7 +25,6 @@ public static class DatabaseSeeder
                 UserName = "Admin User",
                 Email = "admin@example.com",
                 Password = "admin123",
-                Role = "admin",
                 Gender = "Other",
                 IsActive = true,
                 CreatedDate = DateTime.UtcNow,
@@ -36,13 +35,26 @@ public static class DatabaseSeeder
                 UserName = "Employee User",
                 Email = "employee@example.com",
                 Password = "employee123",
-                Role = "employee",
                 Gender = "Other",
                 IsActive = true,
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow,
             }
         };
+
+        context.Users.AddRange(users);
+        await context.SaveChangesAsync();
+
+        // Add roles for users
+        var userRoles = new List<UserRole>
+        {
+            new() { UserId = users[0].UserId, RoleName = "admin", CreatedDate = DateTime.UtcNow },
+            new() { UserId = users[0].UserId, RoleName = "employee", CreatedDate = DateTime.UtcNow },
+            new() { UserId = users[1].UserId, RoleName = "employee", CreatedDate = DateTime.UtcNow }
+        };
+
+        context.UserRoles.AddRange(userRoles);
+        await context.SaveChangesAsync();
 
         var quizzes = new List<Quiz>
         {
@@ -195,7 +207,6 @@ public static class DatabaseSeeder
                 })
         };
 
-        context.Users.AddRange(users);
         context.Quizzes.AddRange(quizzes);
         await context.SaveChangesAsync();
     }

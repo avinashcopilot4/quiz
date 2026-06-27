@@ -3,6 +3,7 @@ using Common.DTO.Quiz;
 using Entity.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System;
 
 [Route("api/quizzes")]
 [ApiController]
@@ -38,16 +39,16 @@ public class QuizzesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<QuizDto>> CreateQuiz(Quiz quiz)
+    public async Task<ActionResult<QuizDto>> CreateQuiz([FromBody]QuizDto quiz)
     {
         var created = await _quizService.CreateQuizAsync(quiz);
         return CreatedAtAction(nameof(GetQuiz), new { quizid = created.QuizId }, ToDto(created));
     }
 
-    [HttpPut("{quizid:int}")]
-    public async Task<IActionResult> UpdateQuiz(int quizid, Quiz quiz)
+    [HttpPut]
+    public async Task<IActionResult> UpdateQuiz([FromQuery] int quizid, [FromBody]QuizDto quiz)
     {
-        if (quizid != quiz.QuizId)
+        if (quizid.ToString() != quiz.Id)
         {
             return BadRequest();
         }
@@ -94,7 +95,7 @@ public class QuizzesController : ControllerBase
             UpdatedAt = quiz.UpdatedDate,
             Questions = quiz.Questions?.Select(q => new QuestionDto
             {
-                Id = q.QuestionId.ToString(),
+                Id = q.QuestionId,
                 Text = q.QuestionText,
                 Options = new List<string> { q.Option1, q.Option2, q.Option3, q.Option4 },
                 CorrectOptionIndex = q.CorrectOption,

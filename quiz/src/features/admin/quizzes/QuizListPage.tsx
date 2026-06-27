@@ -15,6 +15,7 @@ export function QuizListPage() {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
+  
   useEffect(() => {
     const load = async () => {
       const allQuizzes = await fetchAllQuizzes()
