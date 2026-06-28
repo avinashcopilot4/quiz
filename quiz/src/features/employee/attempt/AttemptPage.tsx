@@ -101,8 +101,8 @@ export function AttemptPage() {
       submittedAt: new Date().toISOString(),
     }
 
-    await submitAttempt(attempt)
-    navigate(`/quizzes/${quiz.id}/result/${attempt.id}`)
+    const createdAttempt = await submitAttempt(attempt)
+    navigate(`/quizzes/${quiz.id}/result/${createdAttempt.id}`)
   }
 
   return (

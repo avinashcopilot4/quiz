@@ -16,13 +16,18 @@ public class AttemptRepository : IAttemptRepository
 
     public async Task<IEnumerable<QuizAttempt>> GetAllAsync()
     {
-        return await _context.QuizAttempts.Include(a => a.Quiz).Include(a => a.User).ToListAsync();
+        return await _context.QuizAttempts
+            .Include(a => a.Quiz)
+            .Include(a => a.User)
+            .Include(a => a.AttemptDetails)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<QuizAttempt>> GetByEmployeeIdAsync(int userId)
     {
         return await _context.QuizAttempts
             .Include(a => a.Quiz)
+            .Include(a => a.AttemptDetails)
             .Where(a => a.UserId == userId)
             .ToListAsync();
     }
@@ -31,6 +36,7 @@ public class AttemptRepository : IAttemptRepository
     {
         return await _context.QuizAttempts
             .Include(a => a.User)
+            .Include(a => a.AttemptDetails)
             .Where(a => a.QuizId == quizId)
             .ToListAsync();
     }
@@ -40,6 +46,7 @@ public class AttemptRepository : IAttemptRepository
         return await _context.QuizAttempts
             .Include(a => a.Quiz)
             .Include(a => a.User)
+            .Include(a => a.AttemptDetails)
             .FirstOrDefaultAsync(a => a.AttemptId == attemptId);
     }
 

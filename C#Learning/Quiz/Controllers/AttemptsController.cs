@@ -51,8 +51,30 @@ public class AttemptsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<AttemptDto>> CreateAttempt(QuizAttempt attempt)
+    public async Task<ActionResult<AttemptDto>> CreateAttempt([FromBody] AttemptSubmissionDto request)
     {
+        if (request == null)
+        {
+            return BadRequest();
+        }
+
+        var attempt = new QuizAttempt
+        {
+            UserId = request.UserId,
+            QuizId = request.QuizId,
+            Score = request.Score,
+            MaxPossibleScore = Math.Max(request.MaxPossibleScore, Math.Max(request.AttemptDetails.Count, request.Score)),
+            AttemptedQuestions = request.AttemptedQuestions > 0 ? request.AttemptedQuestions : request.AttemptDetails.Count,
+            CompletedDate = request.CompletedDate ?? DateTime.UtcNow,
+            AttemptDetails = request.AttemptDetails.Select(detail => new AttemptDetail
+            {
+                QuestionId = detail.QuestionId,
+                UserAnswer = detail.UserAnswer,
+                CorrectAnswer = detail.CorrectAnswer,
+                IsCorrect = detail.IsCorrect,
+            }).ToList(),
+        };
+
         var created = await _attemptService.CreateAttemptAsync(attempt);
         return CreatedAtAction(nameof(GetAttempt), new { attemptid = created.AttemptId }, ToDto(created));
     }

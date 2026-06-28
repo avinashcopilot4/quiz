@@ -8,7 +8,7 @@ function mapAttempt(attempt: any): Attempt {
     employeeId: attempt.employeeId,
     answers: (attempt.answers ?? []).map((answer: any) => ({
       questionId: answer.questionId,
-      selectedOptionIndex: answer.selectedOptionIndex,
+      selectedOptionIndex: Number(answer.selectedOptionIndex) - 1,
     })),
     score: attempt.score ?? 0,
     startedAt: attempt.startedAt ?? new Date().toISOString(),
@@ -35,12 +35,12 @@ export async function submitAttempt(attempt: Attempt): Promise<Attempt> {
     userId: Number(attempt.employeeId),
     quizId: Number(attempt.quizId),
     score: attempt.score,
-    maxPossibleScore: 0,
+    maxPossibleScore: attempt.answers.length,
     attemptedQuestions: attempt.answers.length,
     completedDate: attempt.submittedAt,
     attemptDetails: attempt.answers.map((answer) => ({
       questionId: Number(answer.questionId),
-      userAnswer: answer.selectedOptionIndex,
+      userAnswer: answer.selectedOptionIndex + 1,
       correctAnswer: 1,
       isCorrect: false,
     })),
