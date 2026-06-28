@@ -2,10 +2,19 @@ CREATE TABLE Quizzes (
     QuizID INT PRIMARY KEY IDENTITY(1,1),
     Title NVARCHAR(200) NOT NULL,
     Description NVARCHAR(500),
+    Topic NVARCHAR(100) NULL,
+    Language NVARCHAR(50) NULL,
+    Difficulty NVARCHAR(50) NULL,
+    TimeLimit INT NULL,
+    PassingScore INT NULL,
     Status NVARCHAR(50) NOT NULL DEFAULT 'Draft',
     IsDeleted BIT NOT NULL DEFAULT 0,
     CreatedDate DATETIME DEFAULT GETDATE(),
     UpdatedDate DATETIME DEFAULT GETDATE(),
+    CreatedBy NVARCHAR(100) NULL,
+    Author NVARCHAR(100) NULL,
+    Tags NVARCHAR(500) NULL,
+    QuestionCount INT NULL,
     CONSTRAINT CK_Quizzes_Status CHECK (Status IN ('Draft', 'Active', 'Inactive', 'Published', 'Archived')),
     CONSTRAINT CK_Quizzes_IsDeleted CHECK (IsDeleted IN (0, 1))
 );
@@ -31,12 +40,21 @@ CREATE TABLE Users (
     UserName NVARCHAR(100) NOT NULL,
     Email VARCHAR(100) UNIQUE NOT NULL,
     Password NVARCHAR(255) NOT NULL,
-    Role NVARCHAR(50) NOT NULL DEFAULT 'Employee',
     IsActive BIT NOT NULL DEFAULT 1,
     CreatedDate DATETIME DEFAULT GETDATE(),
     UpdatedDate DATETIME DEFAULT GETDATE(),
-    CONSTRAINT CK_Users_Role CHECK (Role IN ('Admin', 'Employee')),
+    Gender NVARCHAR(20) NULL,
+    PhoneNumber NVARCHAR(20) NULL,
     CONSTRAINT CK_Users_IsActive CHECK (IsActive IN (0, 1))
+);
+
+CREATE TABLE UserRoles (
+    UserRoleID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NOT NULL,
+    RoleName NVARCHAR(50) NOT NULL,
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    CONSTRAINT CK_UserRoles_RoleName CHECK (LOWER(RoleName) IN ('admin', 'employee'))
 );
 
 CREATE TABLE QuizAttempts (
