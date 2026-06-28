@@ -1,7 +1,10 @@
 using BusinessCore.Interfaces;
+using Common.DTO.Attempt;
 using Entity.Models;
 using Repositories.Interfaces;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BusinessCore;
@@ -15,34 +18,73 @@ public class AttemptService : IAttemptService
         _attemptRepository = attemptRepository;
     }
 
-    public Task<IEnumerable<QuizAttempt>> GetAllAttemptsAsync()
+    public async Task<IEnumerable<AttemptDto>> GetAllAttemptsAsync()
     {
-        return _attemptRepository.GetAllAsync();
+        var attempts = await _attemptRepository.GetAllAsync();
+        return attempts.Select(MapToDto).ToList();
     }
 
-    public Task<IEnumerable<QuizAttempt>> GetAttemptsByEmployeeAsync(int userId)
+    public async Task<IEnumerable<AttemptDto>> GetAttemptsByEmployeeAsync(int userId)
     {
-        return _attemptRepository.GetByEmployeeIdAsync(userId);
+        var attempts = await _attemptRepository.GetByEmployeeIdAsync(userId);
+        return attempts.Select(MapToDto).ToList();
     }
 
-    public Task<IEnumerable<QuizAttempt>> GetAttemptsByQuizAsync(int quizId)
+    public async Task<IEnumerable<AttemptDto>> GetAttemptsByQuizAsync(int quizId)
     {
-        return _attemptRepository.GetByQuizIdAsync(quizId);
+        var attempts = await _attemptRepository.GetByQuizIdAsync(quizId);
+        return attempts.Select(MapToDto).ToList();
     }
 
-    public Task<QuizAttempt?> GetAttemptByIdAsync(int attemptId)
+    public async Task<AttemptDto?> GetAttemptByIdAsync(int attemptId)
     {
-        return _attemptRepository.GetByIdAsync(attemptId);
+        var attempt = await _attemptRepository.GetByIdAsync(attemptId);
+        return attempt == null ? null : MapToDto(attempt);
     }
 
-    public async Task<QuizAttempt> CreateAttemptAsync(QuizAttempt attempt)
+    public async Task<AttemptDto> CreateAttemptAsync(AttemptSubmissionDto request)
     {
+        var attempt = new QuizAttempt
+        {
+            UserId = request.UserId,
+            QuizId = request.QuizId,
+            Score = request.Score,
+            MaxPossibleScore = Math.Max(request.MaxPossibleScore, Math.Max(request.AttemptDetails.Count, request.Score)),
+            AttemptedQuestions = request.AttemptedQuestions > 0 ? request.AttemptedQuestions : request.AttemptDetails.Count,
+            CompletedDate = request.CompletedDate ?? DateTime.UtcNow,
+            AttemptDetails = request.AttemptDetails.Select(detail => new AttemptDetail
+            {
+                QuestionId = detail.QuestionId,
+                UserAnswer = detail.UserAnswer,
+                CorrectAnswer = detail.CorrectAnswer,
+                IsCorrect = detail.IsCorrect,
+            }).ToList(),
+        };
+
         await _attemptRepository.AddAsync(attempt);
-        return attempt;
+        return MapToDto(attempt);
     }
 
     public Task<bool> AttemptExistsAsync(int attemptId)
     {
         return _attemptRepository.ExistsAsync(attemptId);
+    }
+
+    private static AttemptDto MapToDto(QuizAttempt attempt)
+    {
+        return new AttemptDto
+        {
+            Id = attempt.AttemptId.ToString(),
+            QuizId = attempt.QuizId.ToString(),
+            EmployeeId = attempt.UserId.ToString(),
+            Answers = attempt.AttemptDetails?.Select(detail => new AnswerDto
+            {
+                QuestionId = detail.QuestionId,
+                SelectedOptionIndex = detail.UserAnswer,
+            }).ToList() ?? new List<AnswerDto>(),
+            Score = attempt.Score,
+            StartedAt = attempt.CompletedDate,
+            SubmittedAt = attempt.CompletedDate,
+        };
     }
 }

@@ -1,8 +1,6 @@
 using BusinessCore.Interfaces;
 using Common.DTO.Quiz;
-using Entity.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using System;
 
 [Route("api/quizzes")]
@@ -23,7 +21,7 @@ public class QuizzesController : ControllerBase
             ? await _quizService.GetPublishedQuizzesAsync()
             : await _quizService.GetAllQuizzesAsync();
 
-        return Ok(quizzes.Select(ToDto));
+        return Ok(quizzes);
     }
 
     [HttpGet("{quizid:int}")]
@@ -35,18 +33,18 @@ public class QuizzesController : ControllerBase
             return NotFound();
         }
 
-        return Ok(ToDto(quiz));
+        return Ok(quiz);
     }
 
     [HttpPost]
-    public async Task<ActionResult<QuizDto>> CreateQuiz([FromBody]QuizDto quiz)
+    public async Task<ActionResult<QuizDto>> CreateQuiz([FromBody] QuizDto quiz)
     {
         var created = await _quizService.CreateQuizAsync(quiz);
-        return CreatedAtAction(nameof(GetQuiz), new { quizid = created.QuizId }, ToDto(created));
+        return CreatedAtAction(nameof(GetQuiz), new { quizid = created.Id }, created);
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateQuiz([FromQuery] int quizid, [FromBody]QuizDto quiz)
+    public async Task<IActionResult> UpdateQuiz([FromQuery] int quizid, [FromBody] QuizDto quiz)
     {
         if (quizid.ToString() != quiz.Id)
         {
@@ -72,34 +70,5 @@ public class QuizzesController : ControllerBase
 
         await _quizService.DeleteQuizAsync(quizid);
         return NoContent();
-    }
-
-    private static QuizDto ToDto(Quiz quiz)
-    {
-        return new QuizDto
-        {
-            Id = quiz.QuizId.ToString(),
-            Title = quiz.Title,
-            Description = quiz.Description,
-            Topic = "General",
-            Language = "English",
-            Difficulty = "Intermediate",
-            Tags = new List<string>(),
-            CreatedBy = "admin",
-            Author = "Admin",
-            QuestionCount = quiz.Questions?.Count ?? 0,
-            TimeLimit = 10,
-            PassingScore = 70,
-            Status = quiz.Status ?? "draft",
-            CreatedAt = quiz.CreatedDate,
-            UpdatedAt = quiz.UpdatedDate,
-            Questions = quiz.Questions?.Select(q => new QuestionDto
-            {
-                Id = q.QuestionId,
-                Text = q.QuestionText,
-                Options = new List<string> { q.Option1, q.Option2, q.Option3, q.Option4 },
-                CorrectOptionIndex = q.CorrectOption,
-            }).ToList() ?? new List<QuestionDto>(),
-        };
     }
 }

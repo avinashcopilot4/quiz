@@ -1,8 +1,6 @@
 using BusinessCore.Interfaces;
 using Common.DTO.Attempt;
-using Entity.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace QuizApp.Controllers;
 
@@ -21,21 +19,21 @@ public class AttemptsController : ControllerBase
     public async Task<ActionResult<IEnumerable<AttemptDto>>> GetAttempts()
     {
         var attempts = await _attemptService.GetAllAttemptsAsync();
-        return Ok(attempts.Select(ToDto));
+        return Ok(attempts);
     }
 
     [HttpGet("by-employee/{userid:int}")]
     public async Task<ActionResult<IEnumerable<AttemptDto>>> GetAttemptsByEmployee(int userid)
     {
         var attempts = await _attemptService.GetAttemptsByEmployeeAsync(userid);
-        return Ok(attempts.Select(ToDto));
+        return Ok(attempts);
     }
 
     [HttpGet("by-quiz/{quizid:int}")]
     public async Task<ActionResult<IEnumerable<AttemptDto>>> GetAttemptsByQuiz(int quizid)
     {
         var attempts = await _attemptService.GetAttemptsByQuizAsync(quizid);
-        return Ok(attempts.Select(ToDto));
+        return Ok(attempts);
     }
 
     [HttpGet("{attemptid:int}")]
@@ -47,7 +45,7 @@ public class AttemptsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(ToDto(attempt));
+        return Ok(attempt);
     }
 
     [HttpPost]
@@ -58,42 +56,7 @@ public class AttemptsController : ControllerBase
             return BadRequest();
         }
 
-        var attempt = new QuizAttempt
-        {
-            UserId = request.UserId,
-            QuizId = request.QuizId,
-            Score = request.Score,
-            MaxPossibleScore = Math.Max(request.MaxPossibleScore, Math.Max(request.AttemptDetails.Count, request.Score)),
-            AttemptedQuestions = request.AttemptedQuestions > 0 ? request.AttemptedQuestions : request.AttemptDetails.Count,
-            CompletedDate = request.CompletedDate ?? DateTime.UtcNow,
-            AttemptDetails = request.AttemptDetails.Select(detail => new AttemptDetail
-            {
-                QuestionId = detail.QuestionId,
-                UserAnswer = detail.UserAnswer,
-                CorrectAnswer = detail.CorrectAnswer,
-                IsCorrect = detail.IsCorrect,
-            }).ToList(),
-        };
-
-        var created = await _attemptService.CreateAttemptAsync(attempt);
-        return CreatedAtAction(nameof(GetAttempt), new { attemptid = created.AttemptId }, ToDto(created));
-    }
-
-    private static AttemptDto ToDto(QuizAttempt attempt)
-    {
-        return new AttemptDto
-        {
-            Id = attempt.AttemptId.ToString(),
-            QuizId = attempt.QuizId.ToString(),
-            EmployeeId = attempt.UserId.ToString(),
-            Answers = attempt.AttemptDetails?.Select(detail => new AnswerDto
-            {
-                QuestionId = detail.QuestionId,
-                SelectedOptionIndex = detail.UserAnswer,
-            }).ToList() ?? new List<AnswerDto>(),
-            Score = attempt.Score,
-            StartedAt = attempt.CompletedDate,
-            SubmittedAt = attempt.CompletedDate,
-        };
+        var created = await _attemptService.CreateAttemptAsync(request);
+        return CreatedAtAction(nameof(GetAttempt), new { attemptid = created.Id }, created);
     }
 }

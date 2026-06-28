@@ -53,10 +53,12 @@ export function AdminProfilePage() {
     return <Typography>Loading user profile...</Typography>
   }
 
+  const isAdmin = user.activeRole === 'admin'
+
   return (
     <Box sx={{ maxWidth: 560, mx: 'auto', mt: 6, px: 2 }}>
       <Stack spacing={2}>
-        <Typography variant="h4">Admin Profile</Typography>
+        <Typography variant="h4">{isAdmin ? 'Admin Profile' : 'Employee Profile'}</Typography>
         <Typography variant="body2" color="text.secondary">
           Update your profile information. Your email address cannot be changed here.
         </Typography>

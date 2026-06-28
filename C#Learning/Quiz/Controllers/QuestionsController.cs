@@ -2,7 +2,6 @@
 using Common.DTO.Quiz;
 using Entity.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace QuizApp.Controllers;
 
@@ -21,14 +20,14 @@ public class QuestionsController : ControllerBase
     public async Task<ActionResult<IEnumerable<QuestionDto>>> GetQuestions()
     {
         var questions = await _questionService.GetAllQuestionsAsync();
-        return Ok(questions.Select(ToDto));
+        return Ok(questions);
     }
 
     [HttpGet("by-quiz/{quizid:int}")]
     public async Task<ActionResult<IEnumerable<QuestionDto>>> GetQuestionsByQuiz(int quizid)
     {
         var questions = await _questionService.GetQuestionsByQuizIdAsync(quizid);
-        return Ok(questions.Select(ToDto));
+        return Ok(questions);
     }
 
     [HttpGet("{questionid:int}")]
@@ -40,14 +39,14 @@ public class QuestionsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(ToDto(question));
+        return Ok(question);
     }
 
     [HttpPost]
     public async Task<ActionResult<QuestionDto>> CreateQuestion(Question question)
     {
         var created = await _questionService.CreateQuestionAsync(question);
-        return CreatedAtAction(nameof(GetQuestion), new { questionid = created.QuestionId }, ToDto(created));
+        return CreatedAtAction(nameof(GetQuestion), new { questionid = created.Id }, created);
     }
 
     [HttpPut("{questionid:int}")]
@@ -77,16 +76,5 @@ public class QuestionsController : ControllerBase
 
         await _questionService.DeleteQuestionAsync(questionid);
         return NoContent();
-    }
-
-    private static QuestionDto ToDto(Question question)
-    {
-        return new QuestionDto
-        {
-            Id = question.QuestionId,
-            Text = question.QuestionText,
-            Options = new List<string> { question.Option1, question.Option2, question.Option3, question.Option4 },
-            CorrectOptionIndex = question.CorrectOption,
-        };
     }
 }

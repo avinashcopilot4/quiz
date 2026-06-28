@@ -18,22 +18,25 @@ public class QuizService : IQuizService
         _quizRepository = quizRepository;
     }
 
-    public Task<IEnumerable<Quiz>> GetAllQuizzesAsync()
+    public async Task<IEnumerable<QuizDto>> GetAllQuizzesAsync()
     {
-        return _quizRepository.GetAllAsync();
+        var quizzes = await _quizRepository.GetAllAsync();
+        return quizzes.Select(MapToDto).ToList();
     }
 
-    public Task<IEnumerable<Quiz>> GetPublishedQuizzesAsync()
+    public async Task<IEnumerable<QuizDto>> GetPublishedQuizzesAsync()
     {
-        return _quizRepository.GetPublishedAsync();
+        var quizzes = await _quizRepository.GetPublishedAsync();
+        return quizzes.Select(MapToDto).ToList();
     }
 
-    public Task<Quiz?> GetQuizByIdAsync(int quizId)
+    public async Task<QuizDto?> GetQuizByIdAsync(int quizId)
     {
-        return _quizRepository.GetByIdAsync(quizId);
+        var quiz = await _quizRepository.GetByIdAsync(quizId);
+        return quiz == null ? null : MapToDto(quiz);
     }
 
-    public async Task<Quiz> CreateQuizAsync(QuizDto quiz)
+    public async Task<QuizDto> CreateQuizAsync(QuizDto quiz)
     {
         var entity = new Quiz
         {
@@ -58,7 +61,7 @@ public class QuizService : IQuizService
         };
 
         await _quizRepository.AddAsync(entity);
-        return entity;
+        return MapToDto(entity);
     }
 
     public async Task UpdateQuizAsync(QuizDto quiz)
@@ -130,5 +133,34 @@ public class QuizService : IQuizService
     public Task<bool> QuizExistsAsync(int quizId)
     {
         return _quizRepository.ExistsAsync(quizId);
+    }
+
+    private static QuizDto MapToDto(Quiz quiz)
+    {
+        return new QuizDto
+        {
+            Id = quiz.QuizId.ToString(),
+            Title = quiz.Title,
+            Description = quiz.Description,
+            Topic = "General",
+            Language = "English",
+            Difficulty = "Intermediate",
+            Tags = new List<string>(),
+            CreatedBy = "admin",
+            Author = "Admin",
+            QuestionCount = quiz.Questions?.Count ?? 0,
+            TimeLimit = 10,
+            PassingScore = 70,
+            Status = quiz.Status ?? "draft",
+            CreatedAt = quiz.CreatedDate,
+            UpdatedAt = quiz.UpdatedDate,
+            Questions = quiz.Questions?.Select(q => new QuestionDto
+            {
+                Id = q.QuestionId,
+                Text = q.QuestionText,
+                Options = new List<string> { q.Option1, q.Option2, q.Option3, q.Option4 },
+                CorrectOptionIndex = q.CorrectOption,
+            }).ToList() ?? new List<QuestionDto>(),
+        };
     }
 }

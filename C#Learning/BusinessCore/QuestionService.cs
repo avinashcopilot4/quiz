@@ -1,7 +1,9 @@
 using BusinessCore.Interfaces;
+using Common.DTO.Quiz;
 using Entity.Models;
 using Repositories.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BusinessCore;
@@ -15,25 +17,28 @@ public class QuestionService : IQuestionService
         _questionRepository = questionRepository;
     }
 
-    public Task<IEnumerable<Question>> GetAllQuestionsAsync()
+    public async Task<IEnumerable<QuestionDto>> GetAllQuestionsAsync()
     {
-        return _questionRepository.GetAllAsync();
+        var questions = await _questionRepository.GetAllAsync();
+        return questions.Select(MapToDto).ToList();
     }
 
-    public Task<IEnumerable<Question>> GetQuestionsByQuizIdAsync(int quizId)
+    public async Task<IEnumerable<QuestionDto>> GetQuestionsByQuizIdAsync(int quizId)
     {
-        return _questionRepository.GetByQuizIdAsync(quizId);
+        var questions = await _questionRepository.GetByQuizIdAsync(quizId);
+        return questions.Select(MapToDto).ToList();
     }
 
-    public Task<Question?> GetQuestionByIdAsync(int questionId)
+    public async Task<QuestionDto?> GetQuestionByIdAsync(int questionId)
     {
-        return _questionRepository.GetByIdAsync(questionId);
+        var question = await _questionRepository.GetByIdAsync(questionId);
+        return question == null ? null : MapToDto(question);
     }
 
-    public async Task<Question> CreateQuestionAsync(Question question)
+    public async Task<QuestionDto> CreateQuestionAsync(Question question)
     {
         await _questionRepository.AddAsync(question);
-        return question;
+        return MapToDto(question);
     }
 
     public Task UpdateQuestionAsync(Question question)
@@ -49,5 +54,16 @@ public class QuestionService : IQuestionService
     public Task<bool> QuestionExistsAsync(int questionId)
     {
         return _questionRepository.ExistsAsync(questionId);
+    }
+
+    private static QuestionDto MapToDto(Question question)
+    {
+        return new QuestionDto
+        {
+            Id = question.QuestionId,
+            Text = question.QuestionText,
+            Options = new List<string> { question.Option1, question.Option2, question.Option3, question.Option4 },
+            CorrectOptionIndex = question.CorrectOption,
+        };
     }
 }
