@@ -46,6 +46,7 @@ export function AppRoutes() {
                   <Route path="quizzes/new" element={<QuizEditorPage />} />
                   <Route path="quizzes/:id/edit" element={<QuizEditorPage />} />
                   <Route path="quizzes/:id/results" element={<AdminResultsPage />} />
+                  <Route path="quizzes/:id/result/:attemptId" element={<ResultDetail />} />
                   <Route path="profile" element={<AdminProfilePage />} />
                 </Routes>
               </Layout>
@@ -63,6 +64,17 @@ export function AppRoutes() {
                   <Route path=":id/attempt" element={<AttemptPage />} />
                   <Route path=":id/result/:attemptId" element={<ResultDetail />} />
                 </Routes>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute allowedRoles={['employee'] as UserRole[]}>
+              <Layout>
+                <AdminProfilePage />
               </Layout>
             </ProtectedRoute>
           }

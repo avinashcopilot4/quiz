@@ -38,7 +38,11 @@ export function AdminProfilePage() {
 
     try {
       const updated = await updateUserProfile(user.id, values)
-      updateUser(updated)
+      updateUser({
+        ...updated,
+        roles: user.roles,
+        activeRole: user.activeRole,
+      })
       setSuccessMessage('Profile saved successfully.')
     } catch (error) {
       setServerError((error as Error).message)
@@ -89,7 +93,7 @@ export function AdminProfilePage() {
           <Button variant="contained" onClick={handleSubmit(onSubmit)}>
             Save profile
           </Button>
-          <Button variant="outlined" onClick={() => navigate('/admin/quizzes')}>
+          <Button variant="outlined" onClick={() => navigate(user.activeRole === 'admin' ? '/admin/quizzes' : '/quizzes')}>
             Back
           </Button>
         </Stack>

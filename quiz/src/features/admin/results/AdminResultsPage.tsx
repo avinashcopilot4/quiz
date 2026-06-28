@@ -81,7 +81,7 @@ export function AdminResultsPage() {
                 <Button
                   size="small"
                   sx={{ mt: 1 }}
-                  onClick={() => navigate(`/quizzes/${quiz.id}/result/${attempt.id}`)}
+                  onClick={() => navigate(`/admin/quizzes/${quiz.id}/result/${attempt.id}`)}
                 >
                   View attempt
                 </Button>

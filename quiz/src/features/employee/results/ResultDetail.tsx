@@ -10,14 +10,19 @@ import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import { fetchAttemptById } from '../../../api/attemptApi'
 import { fetchQuizById } from '../../../api/quizApi'
+import { fetchUserById } from '../../../api/authApi'
+import { useAuth } from '../../auth/useAuth'
 import type { Attempt } from '../../../types/attempt.types'
 import type { QuizModel } from '../../../types/quiz.types'
+import type { User } from '../../../types/user.types'
 
 export function ResultDetail() {
   const { id, attemptId } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [attempt, setAttempt] = useState<Attempt | null>(null)
   const [quiz, setQuiz] = useState<QuizModel | null>(null)
+  const [employee, setEmployee] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -29,9 +34,11 @@ export function ResultDetail() {
 
       const fetchedAttempt = await fetchAttemptById(attemptId)
       const fetchedQuiz = await fetchQuizById(id)
+      const fetchedEmployee = fetchedAttempt ? await fetchUserById(fetchedAttempt.employeeId) : undefined
 
       setAttempt(fetchedAttempt ?? null)
       setQuiz(fetchedQuiz ?? null)
+      setEmployee(fetchedEmployee ?? null)
       setLoading(false)
     }
 
@@ -72,6 +79,15 @@ export function ResultDetail() {
         <CardContent>
           <Stack spacing={2}>
             <Typography variant="subtitle1">Attempt details</Typography>
+            {user?.activeRole === 'admin' && employee && (
+              <Box>
+                <Typography variant="subtitle2">Employee</Typography>
+                <Typography>Name: {employee.name}</Typography>
+                <Typography>Email: {employee.email}</Typography>
+                {employee.gender && <Typography>Gender: {employee.gender}</Typography>}
+                {employee.phoneNumber && <Typography>Phone: {employee.phoneNumber}</Typography>}
+              </Box>
+            )}
             <Typography>Started: {new Date(attempt.startedAt).toLocaleString()}</Typography>
             <Typography>Submitted: {new Date(attempt.submittedAt).toLocaleString()}</Typography>
             <Chip label={`${correctCount} correct`} color="success" size="small" />
@@ -120,8 +136,11 @@ export function ResultDetail() {
         })}
       </Stack>
 
-      <Button variant="outlined" onClick={() => navigate('/my-results')}>
-        Back to my results
+      <Button
+        variant="outlined"
+        onClick={() => navigate(user?.activeRole === 'admin' ? `/admin/quizzes/${id}/results` : '/my-results')}
+      >
+        {user?.activeRole === 'admin' ? 'Back to quiz results' : 'Back to my results'}
       </Button>
     </Stack>
   )
