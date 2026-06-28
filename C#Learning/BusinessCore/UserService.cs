@@ -36,6 +36,11 @@ public class UserService : IUserService
         return _userRepository.AddUserAsync(user);
     }
 
+    public Task<User?> GetUserEntityByIdAsync(int userId)
+    {
+        return _userRepository.GetUserEntityByIdAsync(userId);
+    }
+
     public Task UpdateUserAsync(User user)
     {
         return _userRepository.UpdateUserAsync(user);

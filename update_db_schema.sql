@@ -86,7 +86,15 @@ BEGIN
 END
 GO
 
--- 7) Backfill missing Gender values safely
+-- 7) Add PhoneNumber column to Users if it does not exist
+IF COL_LENGTH('dbo.Users', 'PhoneNumber') IS NULL
+BEGIN
+    ALTER TABLE dbo.Users
+    ADD PhoneNumber NVARCHAR(20) NULL;
+END
+GO
+
+-- 8) Backfill missing Gender values safely
 UPDATE dbo.Users
 SET Gender = 'Other'
 WHERE Gender IS NULL OR LTRIM(RTRIM(Gender)) = '';

@@ -46,6 +46,8 @@ public class UserRepository : IUserRepository
             Email = user.Email,
             Roles = user.UserRoles.Select(ur => NormalizeRole(ur.RoleName)).Distinct().ToList(),
             ActiveRole = NormalizeRole(user.UserRoles.FirstOrDefault()?.RoleName) ?? "employee",
+            Gender = user.Gender,
+            PhoneNumber = user.PhoneNumber,
         }).ToList();
     }
 
@@ -67,6 +69,8 @@ public class UserRepository : IUserRepository
             Email = user.Email,
             Roles = user.UserRoles.Select(ur => NormalizeRole(ur.RoleName)).Distinct().ToList(),
             ActiveRole = NormalizeRole(user.UserRoles.FirstOrDefault()?.RoleName) ?? "employee",
+            Gender = user.Gender,
+            PhoneNumber = user.PhoneNumber,
         };
     }
 
@@ -88,6 +92,8 @@ public class UserRepository : IUserRepository
             Email = user.Email,
             Roles = user.UserRoles.Select(ur => NormalizeRole(ur.RoleName)).Distinct().ToList(),
             ActiveRole = NormalizeRole(user.UserRoles.FirstOrDefault()?.RoleName) ?? "employee",
+            Gender = user.Gender,
+            PhoneNumber = user.PhoneNumber,
         };
     }
 
@@ -96,6 +102,11 @@ public class UserRepository : IUserRepository
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return user;
+    }
+
+    public async Task<User?> GetUserEntityByIdAsync(int userId)
+    {
+        return await _context.Users.FindAsync(userId);
     }
 
     public async Task UpdateUserAsync(User user)

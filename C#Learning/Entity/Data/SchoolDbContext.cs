@@ -144,6 +144,7 @@ public partial class SchoolDbContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Gender).HasMaxLength(20);
+            entity.Property(e => e.PhoneNumber).HasMaxLength(20);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.Password).HasMaxLength(255);
             entity.Property(e => e.UpdatedDate)

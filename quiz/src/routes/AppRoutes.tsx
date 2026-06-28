@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
 import { LoginPage } from '../features/auth/LoginPage'
+import { SignupPage } from '../features/auth/SignupPage'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 import { QuizListPage as EmployeeQuizListPage } from '../features/employee/quizzes/QuizListPage'
 import { AttemptPage } from '../features/employee/attempt/AttemptPage'
@@ -9,6 +10,7 @@ import { ResultDetail } from '../features/employee/results/ResultDetail'
 import { QuizListPage as AdminQuizListPage } from '../features/admin/quizzes/QuizListPage'
 import { QuizEditorPage } from '../features/admin/quizzes/QuizEditorPage'
 import { AdminResultsPage } from '../features/admin/results/AdminResultsPage'
+import { AdminProfilePage } from '../features/admin/profile/AdminProfilePage'
 import type { UserRole } from '../types/user.types'
 import { useAuth } from '../features/auth/useAuth'
 
@@ -31,6 +33,7 @@ export function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
 
         <Route
           path="/admin/*"
@@ -43,6 +46,7 @@ export function AppRoutes() {
                   <Route path="quizzes/new" element={<QuizEditorPage />} />
                   <Route path="quizzes/:id/edit" element={<QuizEditorPage />} />
                   <Route path="quizzes/:id/results" element={<AdminResultsPage />} />
+                  <Route path="profile" element={<AdminProfilePage />} />
                 </Routes>
               </Layout>
             </ProtectedRoute>

@@ -21,6 +21,8 @@ public partial class User
 
     public string? Gender { get; set; }
 
+    public string? PhoneNumber { get; set; }
+
     public virtual ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
 
     public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();

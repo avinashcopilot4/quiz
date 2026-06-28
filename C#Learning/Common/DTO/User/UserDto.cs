@@ -19,5 +19,11 @@ namespace Common.DTO.User
 
         [JsonPropertyName("activeRole")]
         public string ActiveRole { get; set; } = "employee";
+
+        [JsonPropertyName("gender")]
+        public string? Gender { get; set; }
+
+        [JsonPropertyName("phoneNumber")]
+        public string? PhoneNumber { get; set; }
     }
 }

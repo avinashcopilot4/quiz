@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -8,6 +8,7 @@ import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
+import Link from '@mui/material/Link'
 import type { LoginCredentials } from '../../api/authApi'
 import type { UserRole } from '../../types/user.types'
 import { useAuth } from './useAuth'
@@ -94,6 +95,13 @@ export function LoginPage() {
       <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
         Continue
       </Button>
+
+      <Typography variant="body2" sx={{ mt: 2, textAlign: 'center' }}>
+        Don&apos;t have an employee account?{' '}
+        <Link component={RouterLink} to="/signup">
+          Employee sign up
+        </Link>
+      </Typography>
     </Box>
   )
 }

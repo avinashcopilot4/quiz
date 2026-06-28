@@ -75,6 +75,17 @@ export function Navbar() {
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
           {user ? (
             <>
+              {user.activeRole === 'admin' && (
+                <Button
+                  component={RouterLink}
+                  to="/admin/profile"
+                  color="inherit"
+                  size="small"
+                >
+                  Profile
+                </Button>
+              )}
+
               {user.roles.length > 1 ? (
                 <>
                   <Button

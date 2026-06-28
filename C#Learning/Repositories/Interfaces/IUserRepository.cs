@@ -11,6 +11,7 @@ public interface IUserRepository
     Task<UserDto?> GetUserByIdAsync(int userId);
     Task<UserDto?> AuthenticateUserAsync(string email, string password);
     Task<User> AddUserAsync(User user);
+    Task<User?> GetUserEntityByIdAsync(int userId);
     Task UpdateUserAsync(User user);
     Task DeleteUserAsync(int userId);
     Task<bool> UserExistsAsync(int userId);

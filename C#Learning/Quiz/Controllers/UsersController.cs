@@ -1,9 +1,12 @@
 using BusinessCore.Interfaces;
+using Common.DTO;
 using Common.DTO.User;
 using Entity.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+
+namespace QuizApp.Controllers;
 
 [Route("api/users")]
 [ApiController]
@@ -101,6 +104,36 @@ public class UsersController : ControllerBase
 
         await _userService.UpdateUserAsync(user);
         return NoContent();
+    }
+
+    [HttpPut("{userid:int}/profile")]
+    public async Task<ActionResult<UserDto>> UpdateUserProfile(int userid, UserProfileUpdateDto request)
+    {
+        if (!await _userService.UserExistsAsync(userid))
+        {
+            return NotFound();
+        }
+
+        var userEntity = await _userService.GetUserEntityByIdAsync(userid);
+        if (userEntity == null)
+        {
+            return NotFound();
+        }
+
+        userEntity.UserName = request.Name;
+        userEntity.Gender = request.Gender;
+        userEntity.PhoneNumber = request.PhoneNumber;
+        userEntity.UpdatedDate = DateTime.UtcNow;
+
+        await _userService.UpdateUserAsync(userEntity);
+
+        var updatedUser = await _userService.GetUserByIdAsync(userid);
+        if (updatedUser == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(updatedUser);
     }
 
     [HttpDelete("{userid:int}")]
